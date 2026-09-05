@@ -26,16 +26,21 @@ export default function PostCard({
       className="card p-4"
       style={{ borderLeft: `4px solid var(${VIBE_COLOR_VAR[vibe]})` }}
     >
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-sm">
-          <Link href={`/profile/${post.author.id}`} className="font-semibold">
-            {post.author.name}
-          </Link>
-          <span
-            className="rounded-full px-2 py-0.5 text-xs font-semibold"
-            style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
-          >
-            {VIBE_LABELS[vibe]}
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-2 text-sm">
+            <Link href={`/profile/${post.author.id}`} className="font-semibold">
+              {post.author.name}
+            </Link>
+            <span
+              className="rounded-full px-2 py-0.5 text-xs font-semibold"
+              style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
+            >
+              {VIBE_LABELS[vibe]}
+            </span>
+          </div>
+          <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
+            @{post.author.username}
           </span>
         </div>
         <span className="text-xs" style={{ color: "var(--fg-muted)" }}>

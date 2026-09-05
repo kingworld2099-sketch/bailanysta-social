@@ -10,7 +10,7 @@ type CommentItem = {
   id: string;
   text: string;
   createdAt: string | Date;
-  author: { id: string; name: string };
+  author: { id: string; name: string; username: string };
 };
 
 export default function CommentsSection({
@@ -76,7 +76,9 @@ export default function CommentsSection({
               <Link href={`/profile/${c.author.id}`} className="font-semibold">
                 {c.author.name}
               </Link>{" "}
-              <span style={{ color: "var(--fg-muted)" }}>{formatRelativeTime(c.createdAt)}</span>
+              <span style={{ color: "var(--fg-muted)" }}>
+                @{c.author.username} · {formatRelativeTime(c.createdAt)}
+              </span>
               <p>{c.text}</p>
             </div>
           ))}
