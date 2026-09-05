@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { del } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { apiError } from "@/lib/api";
 import { NotFoundError, ForbiddenError } from "@/lib/errors";
-import { validatePostText, normalizeOptional } from "@/lib/validation";
+import { validatePostText, normalizeOptional, normalizePhotoUrl } from "@/lib/validation";
+
+async function deleteBlobSafely(url: string) {
+  try {
+    await del(url);
+  } catch {
+    // already gone or unreachable — nothing to do
+  }
+}
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,12 +22,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const text = validatePostText(body.text);
     const place = normalizeOptional(body.place, "place", "Место");
     const plannedAt = normalizeOptional(body.plannedAt, "plannedAt", "Время");
+    const photoUrl = normalizePhotoUrl(body.photoUrl);
 
     const post = await prisma.post.findUnique({ where: { id } });
     if (!post) throw new NotFoundError("Пост не найден");
     if (post.authorId !== user.id) throw new ForbiddenError("Можно редактировать только свои посты");
 
-    const updated = await prisma.post.update({ where: { id }, data: { text, place, plannedAt } });
+    if (post.photoUrl && post.photoUrl !== photoUrl) {
+      await deleteBlobSafely(post.photoUrl);
+    }
+
+    const updated = await prisma.post.update({ where: { id }, data: { text, place, plannedAt, photoUrl } });
 
     return NextResponse.json({ post: updated });
   } catch (e) {
@@ -34,6 +48,10 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     const post = await prisma.post.findUnique({ where: { id } });
     if (!post) throw new NotFoundError("Пост не найден");
     if (post.authorId !== user.id) throw new ForbiddenError("Можно удалять только свои посты");
+
+    if (post.photoUrl) {
+      await deleteBlobSafely(post.photoUrl);
+    }
 
     await prisma.post.delete({ where: { id } });
 

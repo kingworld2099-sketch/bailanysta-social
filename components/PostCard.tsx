@@ -5,6 +5,7 @@ import LikeButton from "./LikeButton";
 import CommentsSection from "./CommentsSection";
 import DeletePostButton from "./DeletePostButton";
 import EditablePostText from "./EditablePostText";
+import { visiblePhotoUrl as getVisiblePhotoUrl } from "@/lib/photo";
 import type { FeedPost } from "@/lib/feed";
 
 export default function PostCard({
@@ -17,6 +18,8 @@ export default function PostCard({
   isLoggedIn: boolean;
 }) {
   const vibe = post.vibe as VibeCode;
+  const shownPhotoUrl = getVisiblePhotoUrl(post.photoUrl, post.createdAt);
+  const hasExpiredPhoto = !!post.photoUrl && !shownPhotoUrl;
 
   return (
     <article
@@ -45,6 +48,8 @@ export default function PostCard({
         initialText={post.text}
         initialPlace={post.place}
         initialPlannedAt={post.plannedAt}
+        visiblePhotoUrl={shownPhotoUrl}
+        hasExpiredPhoto={hasExpiredPhoto}
         isOwn={currentUserId === post.author.id}
       />
 

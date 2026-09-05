@@ -2,19 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LIMITS } from "@/lib/config";
+import { LIMITS, PHOTO_EXPIRY_HOURS } from "@/lib/config";
+import { placeSearchUrl } from "@/lib/place";
+import PhotoPicker from "./PhotoPicker";
 
 export default function EditablePostText({
   postId,
   initialText,
   initialPlace,
   initialPlannedAt,
+  visiblePhotoUrl,
+  hasExpiredPhoto,
   isOwn,
 }: {
   postId: string;
   initialText: string;
   initialPlace: string | null;
   initialPlannedAt: string | null;
+  visiblePhotoUrl: string | null;
+  hasExpiredPhoto: boolean;
   isOwn: boolean;
 }) {
   const router = useRouter();
@@ -22,6 +28,8 @@ export default function EditablePostText({
   const [text, setText] = useState(initialText);
   const [place, setPlace] = useState(initialPlace ?? "");
   const [plannedAt, setPlannedAt] = useState(initialPlannedAt ?? "");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(visiblePhotoUrl);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +43,7 @@ export default function EditablePostText({
     const res = await fetch(`/api/posts/${postId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: trimmed, place, plannedAt }),
+      body: JSON.stringify({ text: trimmed, place, plannedAt, photoUrl }),
     });
 
     setIsSubmitting(false);
@@ -55,9 +63,34 @@ export default function EditablePostText({
     return (
       <div className="mb-3">
         <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{text}</p>
+        {visiblePhotoUrl && (
+          <img
+            src={visiblePhotoUrl}
+            alt=""
+            className="mt-2 max-h-72 w-full rounded-2xl border object-cover"
+            style={{ borderColor: "var(--border)" }}
+          />
+        )}
+        {!visiblePhotoUrl && hasExpiredPhoto && (
+          <p className="mt-2 text-xs" style={{ color: "var(--fg-muted)" }}>
+            Фото было доступно {PHOTO_EXPIRY_HOURS} часов и уже исчезло
+          </p>
+        )}
         {meetLine && (
           <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>
-            📍 {meetLine}
+            📍{" "}
+            {place ? (
+              <a
+                href={placeSearchUrl(place)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {place}
+              </a>
+            ) : null}
+            {place && plannedAt ? " · " : null}
+            {plannedAt}
           </p>
         )}
         {isOwn && (
@@ -99,6 +132,11 @@ export default function EditablePostText({
           className="text-sm"
         />
       </div>
+
+      <div className="mb-1 mt-2">
+        <PhotoPicker value={photoUrl} onChange={setPhotoUrl} onUploadingChange={setIsPhotoUploading} />
+      </div>
+
       <div className="mt-1 flex items-center justify-between">
         <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
           {text.length} / {LIMITS.postText.max}
@@ -110,6 +148,7 @@ export default function EditablePostText({
               setText(initialText);
               setPlace(initialPlace ?? "");
               setPlannedAt(initialPlannedAt ?? "");
+              setPhotoUrl(visiblePhotoUrl);
               setEditing(false);
               setError(null);
             }}
@@ -120,7 +159,7 @@ export default function EditablePostText({
           <button
             type="button"
             onClick={save}
-            disabled={isSubmitting || text.trim().length === 0}
+            disabled={isSubmitting || isPhotoUploading || text.trim().length === 0}
             className="btn btn-primary !px-3 !py-1.5 text-sm"
           >
             {isSubmitting ? "Сохраняем…" : "Сохранить"}

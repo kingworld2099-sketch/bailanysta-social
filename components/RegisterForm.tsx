@@ -36,7 +36,7 @@ export default function RegisterForm() {
       return;
     }
 
-    router.push("/feed");
+    router.push("/feed?onboarding=tips");
     router.refresh();
   }
 

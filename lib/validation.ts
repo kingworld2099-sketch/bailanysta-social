@@ -75,6 +75,14 @@ export function validatePostText(raw: unknown): string {
   return value;
 }
 
+export function normalizePhotoUrl(raw: unknown): string | null {
+  if (raw === undefined || raw === null || raw === "") return null;
+  if (typeof raw !== "string" || !raw.startsWith("https://") || raw.length > 500) {
+    throw new ValidationError("Некорректная ссылка на фото");
+  }
+  return raw;
+}
+
 export function validateCommentText(raw: unknown): string {
   if (typeof raw !== "string") throw new ValidationError("Текст комментария обязателен");
   const value = raw.trim();

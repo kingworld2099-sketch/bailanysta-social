@@ -8,6 +8,7 @@ import FeedControls from "@/components/FeedControls";
 import PostComposer from "@/components/PostComposer";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
+import WelcomeModal from "@/components/WelcomeModal";
 import Link from "next/link";
 
 function isVibe(v: unknown): v is VibeCode {
@@ -52,9 +53,11 @@ export default async function FeedPage({
   ]);
 
   const cityLabel = city ? cityInSentence(city) : "всех городах";
+  const onboarding = params.onboarding === "tips" ? "tips" : "intro";
 
   return (
     <div>
+      <WelcomeModal variant={onboarding} />
       {!user && <GuestBanner />}
 
       <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-5">

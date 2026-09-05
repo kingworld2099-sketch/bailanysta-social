@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { apiError } from "@/lib/api";
-import { validatePostText, normalizeOptional, normalizeVibe } from "@/lib/validation";
+import { validatePostText, normalizeOptional, normalizeVibe, normalizePhotoUrl } from "@/lib/validation";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
     const text = validatePostText(body.text);
     const place = normalizeOptional(body.place, "place", "Место");
     const plannedAt = normalizeOptional(body.plannedAt, "plannedAt", "Время");
+    const photoUrl = normalizePhotoUrl(body.photoUrl);
     const vibe = body.vibe !== undefined ? normalizeVibe(body.vibe) : user.vibe;
 
     if (vibe !== user.vibe) {
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
         vibe,
         place,
         plannedAt,
+        photoUrl,
       },
       include: {
         author: { select: { id: true, name: true, city: true } },

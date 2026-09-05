@@ -1,4 +1,8 @@
 export const ACTIVE_WINDOW_HOURS = 48;
+export const PHOTO_EXPIRY_HOURS = 8;
+
+export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+export const PHOTO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export const VIBES = ["MOVE", "CALM", "DRAINED", "WORK"] as const;
 export type VibeCode = (typeof VIBES)[number];

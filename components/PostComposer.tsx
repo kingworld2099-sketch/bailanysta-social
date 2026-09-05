@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LIMITS, VIBES, VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
+import { LIMITS, VIBES, VIBE_LABELS, VIBE_COLOR_VAR, VibeCode, PHOTO_EXPIRY_HOURS } from "@/lib/config";
+import PhotoPicker from "./PhotoPicker";
 
 export default function PostComposer({ vibe }: { vibe: VibeCode }) {
   const router = useRouter();
@@ -10,13 +11,15 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
   const [selectedVibe, setSelectedVibe] = useState<VibeCode>(vibe);
   const [place, setPlace] = useState("");
   const [plannedAt, setPlannedAt] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const max = LIMITS.postText.max;
   const length = text.length;
   const isNearLimit = length > max - 40;
-  const canSubmit = length > 0 && length <= max && !isSubmitting;
+  const canSubmit = length > 0 && length <= max && !isSubmitting && !isPhotoUploading;
 
   async function submit() {
     if (!canSubmit) return;
@@ -26,7 +29,7 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
     const res = await fetch("/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, vibe: selectedVibe, place, plannedAt }),
+      body: JSON.stringify({ text, vibe: selectedVibe, place, plannedAt, photoUrl }),
     });
 
     setIsSubmitting(false);
@@ -40,6 +43,7 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
     setText("");
     setPlace("");
     setPlannedAt("");
+    setPhotoUrl(null);
     router.refresh();
   }
 
@@ -99,6 +103,15 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
           placeholder="Когда? (необязательно)"
           maxLength={LIMITS.plannedAt.max}
         />
+      </div>
+
+      <div className="mt-2">
+        <PhotoPicker value={photoUrl} onChange={setPhotoUrl} onUploadingChange={setIsPhotoUploading} />
+        {photoUrl && (
+          <p className="mt-1 text-xs" style={{ color: "var(--fg-muted)" }}>
+            Фото исчезнет из поста через {PHOTO_EXPIRY_HOURS} часов
+          </p>
+        )}
       </div>
 
       {error && (
