@@ -2,14 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { VIBES, VIBE_LABELS, VibeCode } from "@/lib/config";
-
-const VIBE_VAR: Record<VibeCode, string> = {
-  MOVE: "--vibe-move",
-  CALM: "--vibe-calm",
-  DRAINED: "--vibe-drained",
-  WORK: "--vibe-work",
-};
+import { VIBES, VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 
 export default function VibeSwitcher({
   active,
@@ -65,8 +58,8 @@ export default function VibeSwitcher({
               style={
                 isActive
                   ? {
-                      background: `var(${VIBE_VAR[vibe]})`,
-                      borderColor: `var(${VIBE_VAR[vibe]})`,
+                      background: `var(${VIBE_COLOR_VAR[vibe]})`,
+                      borderColor: `var(${VIBE_COLOR_VAR[vibe]})`,
                       color: "#fff",
                     }
                   : undefined

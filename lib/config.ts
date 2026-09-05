@@ -17,6 +17,13 @@ export const VIBE_COUNTER_PHRASE: Record<VibeCode, string> = {
   WORK: "в работе",
 };
 
+export const VIBE_COLOR_VAR: Record<VibeCode, string> = {
+  MOVE: "--vibe-move",
+  CALM: "--vibe-calm",
+  DRAINED: "--vibe-drained",
+  WORK: "--vibe-work",
+};
+
 export const CITIES = ["Астана", "Алматы", "Шымкент", "Караганда", "Актобе"] as const;
 export const DEFAULT_CITY = "Астана";
 
@@ -41,4 +48,6 @@ export const LIMITS = {
   contact: { max: 100 },
   postText: { min: 1, max: 500 },
   commentText: { min: 1, max: 300 },
+  place: { max: 80 },
+  plannedAt: { max: 40 },
 };

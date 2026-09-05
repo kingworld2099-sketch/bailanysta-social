@@ -56,10 +56,22 @@ body {
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(900px circle at 8% -10%, color-mix(in srgb, var(--vibe-move) 16%, transparent), transparent 60%),
+    radial-gradient(800px circle at 100% 0%, color-mix(in srgb, var(--vibe-work) 14%, transparent), transparent 55%),
+    radial-gradient(900px circle at 30% 100%, color-mix(in srgb, var(--vibe-calm) 12%, transparent), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--fg);
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+.brand {
+  background: linear-gradient(135deg, var(--vibe-move), var(--accent) 55%, var(--vibe-calm));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 button {

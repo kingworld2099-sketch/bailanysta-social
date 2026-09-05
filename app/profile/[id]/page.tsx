@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
-import { VIBE_LABELS, VibeCode } from "@/lib/config";
+import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
+import BackToFeed from "@/components/BackToFeed";
 
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,10 +23,17 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-6">
-      <div className="card flex flex-col gap-2 p-5">
+      <BackToFeed />
+      <div
+        className="card flex flex-col gap-2 p-5"
+        style={{ borderLeft: `4px solid var(${VIBE_COLOR_VAR[vibe]})` }}
+      >
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">{profileUser.name}</h1>
-          <span className="rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs font-semibold text-[var(--accent-fg)]">
+          <span
+            className="rounded-full px-2 py-0.5 text-xs font-semibold"
+            style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
+          >
             {VIBE_LABELS[vibe]}
           </span>
         </div>

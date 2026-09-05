@@ -20,7 +20,7 @@ type SeedUser = {
   bio?: string;
   contact?: string;
   vibeAgeHours: number;
-  posts: { text: string; ageMinutes: number }[];
+  posts: { text: string; ageMinutes: number; place?: string; plannedAt?: string }[];
 };
 
 const users: SeedUser[] = [
@@ -32,7 +32,14 @@ const users: SeedUser[] = [
     occupation: "Официантка",
     bio: "Люблю движ и новых людей",
     vibeAgeHours: 1,
-    posts: [{ text: "Только закрыла смену, ищу компанию на завтрак в центре", ageMinutes: 40 }],
+    posts: [
+      {
+        text: "Только закрыла смену, ищу компанию на завтрак в центре",
+        ageMinutes: 40,
+        place: "Кофейня на Туран",
+        plannedAt: "прямо сейчас",
+      },
+    ],
   },
   {
     username: "daniyar91",
@@ -42,7 +49,12 @@ const users: SeedUser[] = [
     occupation: "Курьер",
     vibeAgeHours: 2,
     posts: [
-      { text: "Еду в центр, кто рядом — погнали гулять", ageMinutes: 90 },
+      {
+        text: "Еду в центр, кто рядом — погнали гулять",
+        ageMinutes: 90,
+        place: "Хан Шатыр",
+        plannedAt: "через полчаса",
+      },
       { text: "Погода отличная, не хочу домой в такой вечер", ageMinutes: 20 },
     ],
   },
@@ -74,7 +86,14 @@ const users: SeedUser[] = [
     occupation: "Барista",
     bio: "После смены — только движ",
     vibeAgeHours: 1,
-    posts: [{ text: "Закрыла смену, хочу куда-нибудь выбраться прямо сейчас", ageMinutes: 15 }],
+    posts: [
+      {
+        text: "Закрыла смену, хочу куда-нибудь выбраться прямо сейчас",
+        ageMinutes: 15,
+        place: "Достык Plaza",
+        plannedAt: "сейчас",
+      },
+    ],
   },
   {
     username: "nurlan_b",
@@ -237,6 +256,8 @@ async function main() {
           authorId: user.id,
           text: p.text,
           vibe: u.vibe,
+          place: p.place,
+          plannedAt: p.plannedAt,
           createdAt: minutesAgo(p.ageMinutes),
         },
       });

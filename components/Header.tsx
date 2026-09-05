@@ -7,9 +7,12 @@ export default function Header({
   user: { id: string; name: string } | null;
 }) {
   return (
-    <header className="sticky top-0 z-20 border-b" style={{ background: "var(--bg)", borderColor: "var(--border)" }}>
+    <header
+      className="sticky top-0 z-20 border-b backdrop-blur"
+      style={{ background: "color-mix(in srgb, var(--bg) 88%, transparent)", borderColor: "var(--border)" }}
+    >
       <div className="mx-auto flex max-w-xl items-center justify-between gap-2 px-4 py-3">
-        <Link href="/feed" className="text-lg font-bold tracking-tight">
+        <Link href="/feed" className="brand text-lg font-extrabold tracking-tight">
           Bailanysta
         </Link>
 

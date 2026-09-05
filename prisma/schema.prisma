@@ -40,6 +40,8 @@ model Post {
   authorId  String
   text      String
   vibe      Vibe
+  place     String?
+  plannedAt String?
   createdAt DateTime @default(now())
 
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)

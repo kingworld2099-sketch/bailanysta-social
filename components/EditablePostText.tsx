@@ -7,15 +7,21 @@ import { LIMITS } from "@/lib/config";
 export default function EditablePostText({
   postId,
   initialText,
+  initialPlace,
+  initialPlannedAt,
   isOwn,
 }: {
   postId: string;
   initialText: string;
+  initialPlace: string | null;
+  initialPlannedAt: string | null;
   isOwn: boolean;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(initialText);
+  const [place, setPlace] = useState(initialPlace ?? "");
+  const [plannedAt, setPlannedAt] = useState(initialPlannedAt ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +35,7 @@ export default function EditablePostText({
     const res = await fetch(`/api/posts/${postId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: trimmed }),
+      body: JSON.stringify({ text: trimmed, place, plannedAt }),
     });
 
     setIsSubmitting(false);
@@ -45,9 +51,15 @@ export default function EditablePostText({
   }
 
   if (!editing) {
+    const meetLine = [place, plannedAt].filter(Boolean).join(" · ");
     return (
       <div className="mb-3">
         <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{text}</p>
+        {meetLine && (
+          <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>
+            📍 {meetLine}
+          </p>
+        )}
         {isOwn && (
           <button
             type="button"
@@ -71,6 +83,22 @@ export default function EditablePostText({
         maxLength={LIMITS.postText.max}
         className="w-full resize-none text-[15px]"
       />
+      <div className="mb-1 mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <input
+          value={place}
+          onChange={(e) => setPlace(e.target.value)}
+          placeholder="Где будешь? (необязательно)"
+          maxLength={LIMITS.place.max}
+          className="text-sm"
+        />
+        <input
+          value={plannedAt}
+          onChange={(e) => setPlannedAt(e.target.value)}
+          placeholder="Когда? (необязательно)"
+          maxLength={LIMITS.plannedAt.max}
+          className="text-sm"
+        />
+      </div>
       <div className="mt-1 flex items-center justify-between">
         <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
           {text.length} / {LIMITS.postText.max}
@@ -80,6 +108,8 @@ export default function EditablePostText({
             type="button"
             onClick={() => {
               setText(initialText);
+              setPlace(initialPlace ?? "");
+              setPlannedAt(initialPlannedAt ?? "");
               setEditing(false);
               setError(null);
             }}

@@ -1,18 +1,11 @@
 import Link from "next/link";
-import { VIBE_LABELS, VibeCode } from "@/lib/config";
+import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { formatRelativeTime } from "@/lib/format";
 import LikeButton from "./LikeButton";
 import CommentsSection from "./CommentsSection";
 import DeletePostButton from "./DeletePostButton";
 import EditablePostText from "./EditablePostText";
 import type { FeedPost } from "@/lib/feed";
-
-const VIBE_VAR: Record<VibeCode, string> = {
-  MOVE: "--vibe-move",
-  CALM: "--vibe-calm",
-  DRAINED: "--vibe-drained",
-  WORK: "--vibe-work",
-};
 
 export default function PostCard({
   post,
@@ -26,7 +19,10 @@ export default function PostCard({
   const vibe = post.vibe as VibeCode;
 
   return (
-    <article className="card p-4">
+    <article
+      className="card p-4"
+      style={{ borderLeft: `4px solid var(${VIBE_COLOR_VAR[vibe]})` }}
+    >
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm">
           <Link href={`/profile/${post.author.id}`} className="font-semibold">
@@ -34,7 +30,7 @@ export default function PostCard({
           </Link>
           <span
             className="rounded-full px-2 py-0.5 text-xs font-semibold"
-            style={{ background: `var(${VIBE_VAR[vibe]})`, color: "#fff" }}
+            style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
           >
             {VIBE_LABELS[vibe]}
           </span>
@@ -44,7 +40,13 @@ export default function PostCard({
         </span>
       </div>
 
-      <EditablePostText postId={post.id} initialText={post.text} isOwn={currentUserId === post.author.id} />
+      <EditablePostText
+        postId={post.id}
+        initialText={post.text}
+        initialPlace={post.place}
+        initialPlannedAt={post.plannedAt}
+        isOwn={currentUserId === post.author.id}
+      />
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

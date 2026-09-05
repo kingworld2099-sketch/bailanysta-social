@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/session";
 import { getFeedPosts, getActiveCount } from "@/lib/feed";
-import { DEFAULT_CITY, VIBES, VIBE_COUNTER_PHRASE, VibeCode, cityInSentence } from "@/lib/config";
+import { DEFAULT_CITY, VIBES, VIBE_COUNTER_PHRASE, VIBE_COLOR_VAR, VibeCode, cityInSentence } from "@/lib/config";
 import { formatPeopleCount } from "@/lib/format";
 import GuestBanner from "@/components/GuestBanner";
 import VibeSwitcher from "@/components/VibeSwitcher";
@@ -58,21 +58,31 @@ export default async function FeedPage({
       {!user && <GuestBanner />}
 
       <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-5">
-        <VibeSwitcher active={activeVibe} isLoggedIn={!!user} searchParamsString={searchParamsString} />
+        <div
+          className="card flex flex-col gap-3 p-4"
+          style={{
+            background: activeVibe
+              ? `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 8%, var(--bg-elevated))`
+              : undefined,
+            borderColor: activeVibe ? `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 35%, var(--border))` : undefined,
+          }}
+        >
+          <VibeSwitcher active={activeVibe} isLoggedIn={!!user} searchParamsString={searchParamsString} />
 
-        {activeVibe && activeCount !== null ? (
-          <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
-            {activeCount === 0
-              ? "Пока никого — ты первый"
-              : `Сейчас в ${cityLabel} ${VIBE_COUNTER_PHRASE[activeVibe]} — ${formatPeopleCount(activeCount)}`}
-          </p>
-        ) : (
-          <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
-            Показаны все вайбы
-          </p>
-        )}
+          {activeVibe && activeCount !== null ? (
+            <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
+              {activeCount === 0
+                ? "Пока никого — ты первый"
+                : `Сейчас в ${cityLabel} ${VIBE_COUNTER_PHRASE[activeVibe]} — ${formatPeopleCount(activeCount)}`}
+            </p>
+          ) : (
+            <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
+              Показаны все вайбы
+            </p>
+          )}
 
-        <FeedControls isLoggedIn={!!user} scope={scope} city={city} searchParamsString={searchParamsString} />
+          <FeedControls isLoggedIn={!!user} scope={scope} city={city} searchParamsString={searchParamsString} />
+        </div>
 
         {user && <PostComposer vibe={user.vibe} />}
 
