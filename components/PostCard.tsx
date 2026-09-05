@@ -4,6 +4,7 @@ import { formatRelativeTime } from "@/lib/format";
 import LikeButton from "./LikeButton";
 import CommentsSection from "./CommentsSection";
 import DeletePostButton from "./DeletePostButton";
+import EditablePostText from "./EditablePostText";
 import type { FeedPost } from "@/lib/feed";
 
 const VIBE_VAR: Record<VibeCode, string> = {
@@ -43,7 +44,7 @@ export default function PostCard({
         </span>
       </div>
 
-      <p className="mb-3 whitespace-pre-wrap text-[15px] leading-relaxed">{post.text}</p>
+      <EditablePostText postId={post.id} initialText={post.text} isOwn={currentUserId === post.author.id} />
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
