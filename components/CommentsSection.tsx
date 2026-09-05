@@ -3,14 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import GuestModal from "./GuestModal";
-import { formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime, fullName } from "@/lib/format";
 import { LIMITS } from "@/lib/config";
+import MentionText from "./MentionText";
 
 type CommentItem = {
   id: string;
   text: string;
   createdAt: string | Date;
-  author: { id: string; name: string; username: string };
+  author: { id: string; name: string; lastName: string | null; username: string };
 };
 
 export default function CommentsSection({
@@ -74,12 +75,14 @@ export default function CommentsSection({
           {comments.map((c) => (
             <div key={c.id} className="text-sm">
               <Link href={`/profile/${c.author.id}`} className="font-semibold">
-                {c.author.name}
+                {fullName(c.author)}
               </Link>{" "}
               <span style={{ color: "var(--fg-muted)" }}>
                 @{c.author.username} · {formatRelativeTime(c.createdAt)}
               </span>
-              <p>{c.text}</p>
+              <p>
+                <MentionText text={c.text} />
+              </p>
             </div>
           ))}
 

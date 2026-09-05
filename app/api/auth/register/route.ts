@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
 
     const username = normalizeUsername(body.username);
     const name = normalizeName(body.name);
+    const lastName = normalizeOptional(body.lastName, "lastName", "Фамилия");
     const city = normalizeCity(body.city, body.otherCity);
     const password = validatePassword(body.password);
     const occupation = normalizeOptional(body.occupation, "occupation", "Чем занимаешься");
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await hashPassword(password);
 
     const user = await prisma.user.create({
-      data: { username, name, city, occupation, bio, contact, passwordHash },
+      data: { username, name, lastName, city, occupation, bio, contact, passwordHash },
     });
 
     await createSessionCookie(user.id);

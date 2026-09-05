@@ -46,6 +46,7 @@ export function cityInSentence(city: string): string {
 export const LIMITS = {
   username: { min: 3, max: 20 },
   name: { min: 2, max: 40 },
+  lastName: { max: 40 },
   password: { min: 6 },
   bio: { max: 300 },
   occupation: { max: 100 },

@@ -8,6 +8,7 @@ export default function RegisterForm() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [city, setCity] = useState<string>(CITIES[0]);
   const [otherCity, setOtherCity] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +26,7 @@ export default function RegisterForm() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, name, city, otherCity, password, occupation, bio, contact }),
+      body: JSON.stringify({ username, name, lastName, city, otherCity, password, occupation, bio, contact }),
     });
 
     setIsSubmitting(false);
@@ -61,6 +62,16 @@ export default function RegisterForm() {
           placeholder="Айгерим"
           maxLength={LIMITS.name.max}
           required
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-sm">
+        Фамилия (необязательно)
+        <input
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Касымова"
+          maxLength={LIMITS.lastName.max}
         />
       </label>
 

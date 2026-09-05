@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LIMITS, VIBES, VIBE_LABELS, VIBE_COLOR_VAR, VibeCode, PHOTO_EXPIRY_HOURS } from "@/lib/config";
 import PhotoPicker from "./PhotoPicker";
+import MentionTextarea from "./MentionTextarea";
 
 export default function PostComposer({ vibe }: { vibe: VibeCode }) {
   const router = useRouter();
@@ -77,12 +78,12 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
         })}
       </div>
 
-      <textarea
+      <MentionTextarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Что у тебя происходит прямо сейчас?"
+        onChange={setText}
+        placeholder="Что у тебя происходит прямо сейчас? Напиши @, чтобы отметить человека"
         rows={3}
-        className="w-full resize-none"
+        maxLength={max}
       />
       <div className="mt-1 flex justify-end">
         <span className="text-sm" style={{ color: isNearLimit ? "var(--danger)" : "var(--fg-muted)" }}>

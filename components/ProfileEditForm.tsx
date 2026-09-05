@@ -7,13 +7,21 @@ import { CITIES, LIMITS } from "@/lib/config";
 export default function ProfileEditForm({
   user,
 }: {
-  user: { name: string; city: string; occupation: string | null; bio: string | null; contact: string | null };
+  user: {
+    name: string;
+    lastName: string | null;
+    city: string;
+    occupation: string | null;
+    bio: string | null;
+    contact: string | null;
+  };
 }) {
   const router = useRouter();
   const knownCity = (CITIES as readonly string[]).includes(user.city);
 
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user.name);
+  const [lastName, setLastName] = useState(user.lastName ?? "");
   const [city, setCity] = useState(knownCity ? user.city : "Другой");
   const [otherCity, setOtherCity] = useState(knownCity ? "" : user.city);
   const [occupation, setOccupation] = useState(user.occupation ?? "");
@@ -30,7 +38,7 @@ export default function ProfileEditForm({
     const res = await fetch("/api/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, city, otherCity, occupation, bio, contact }),
+      body: JSON.stringify({ name, lastName, city, otherCity, occupation, bio, contact }),
     });
 
     setIsSubmitting(false);
@@ -58,6 +66,11 @@ export default function ProfileEditForm({
       <label className="flex flex-col gap-1 text-sm">
         Имя
         <input value={name} onChange={(e) => setName(e.target.value)} maxLength={LIMITS.name.max} required />
+      </label>
+
+      <label className="flex flex-col gap-1 text-sm">
+        Фамилия (необязательно)
+        <input value={lastName} onChange={(e) => setLastName(e.target.value)} maxLength={LIMITS.lastName.max} />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">

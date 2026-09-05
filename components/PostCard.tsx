@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
-import { formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime, fullName } from "@/lib/format";
 import LikeButton from "./LikeButton";
 import CommentsSection from "./CommentsSection";
 import DeletePostButton from "./DeletePostButton";
@@ -30,7 +30,7 @@ export default function PostCard({
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2 text-sm">
             <Link href={`/profile/${post.author.id}`} className="font-semibold">
-              {post.author.name}
+              {fullName(post.author)}
             </Link>
             <span
               className="rounded-full px-2 py-0.5 text-xs font-semibold"

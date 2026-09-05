@@ -10,6 +10,10 @@ export function formatPeopleCount(n: number): string {
   return `${n} ${ruPlural(n, ["человек", "человека", "человек"])}`;
 }
 
+export function fullName(user: { name: string; lastName?: string | null }): string {
+  return user.lastName ? `${user.name} ${user.lastName}` : user.name;
+}
+
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
   "июля", "августа", "сентября", "октября", "ноября", "декабря",

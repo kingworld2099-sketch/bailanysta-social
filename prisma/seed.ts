@@ -14,6 +14,7 @@ function minutesAgo(m: number) {
 type SeedUser = {
   username: string;
   name: string;
+  lastName?: string;
   city: string;
   vibe: Vibe;
   occupation?: string;
@@ -27,6 +28,7 @@ const users: SeedUser[] = [
   {
     username: "aigerim_k",
     name: "Айгерим",
+    lastName: "Касымова",
     city: "Астана",
     vibe: "MOVE",
     occupation: "Официантка",
@@ -44,6 +46,7 @@ const users: SeedUser[] = [
   {
     username: "daniyar91",
     name: "Данияр",
+    lastName: "Бекенов",
     city: "Астана",
     vibe: "MOVE",
     occupation: "Курьер",
@@ -61,6 +64,7 @@ const users: SeedUser[] = [
   {
     username: "asel_m",
     name: "Асель",
+    lastName: "Жумабекова",
     city: "Алматы",
     vibe: "CALM",
     occupation: "Бухгалтер",
@@ -72,6 +76,7 @@ const users: SeedUser[] = [
   {
     username: "erlan_t",
     name: "Ерлан",
+    lastName: "Токтаров",
     city: "Астана",
     vibe: "WORK",
     occupation: "Разработчик",
@@ -81,6 +86,7 @@ const users: SeedUser[] = [
   {
     username: "madina_s",
     name: "Мадина",
+    lastName: "Сериккызы",
     city: "Астана",
     vibe: "MOVE",
     occupation: "Барista",
@@ -98,6 +104,7 @@ const users: SeedUser[] = [
   {
     username: "nurlan_b",
     name: "Нурлан",
+    lastName: "Абенов",
     city: "Алматы",
     vibe: "DRAINED",
     occupation: "Таксист",
@@ -107,6 +114,7 @@ const users: SeedUser[] = [
   {
     username: "sabina_z",
     name: "Сабина",
+    lastName: "Заманова",
     city: "Астана",
     vibe: "CALM",
     bio: "Читаю, гуляю, никуда не спешу",
@@ -116,6 +124,7 @@ const users: SeedUser[] = [
   {
     username: "timur_k",
     name: "Тимур",
+    lastName: "Кенжебаев",
     city: "Астана",
     vibe: "MOVE",
     occupation: "Фотограф",
@@ -126,6 +135,7 @@ const users: SeedUser[] = [
   {
     username: "zhanna_a",
     name: "Жанна",
+    lastName: "Абдуллина",
     city: "Астана",
     vibe: "CALM",
     occupation: "Учитель",
@@ -135,6 +145,7 @@ const users: SeedUser[] = [
   {
     username: "alibek_d",
     name: "Алибек",
+    lastName: "Досжанов",
     city: "Алматы",
     vibe: "WORK",
     occupation: "Менеджер проектов",
@@ -144,15 +155,17 @@ const users: SeedUser[] = [
   {
     username: "karina_o",
     name: "Карина",
+    lastName: "Оспанова",
     city: "Астана",
     vibe: "MOVE",
     bio: "Ищу приключения по вечерам",
     vibeAgeHours: 1,
-    posts: [{ text: "Только выспалась, полна энергии — го гулять в парк", ageMinutes: 30 }],
+    posts: [{ text: "Только выспалась, полна энергии — го гулять в парк, @daniyar91?", ageMinutes: 30 }],
   },
   {
     username: "rustam_n",
     name: "Рустам",
+    lastName: "Нургалиев",
     city: "Астана",
     vibe: "WORK",
     occupation: "Юрист",
@@ -162,6 +175,7 @@ const users: SeedUser[] = [
   {
     username: "dinara_y",
     name: "Динара",
+    lastName: "Ыдырысова",
     city: "Алматы",
     vibe: "CALM",
     occupation: "Дизайнер",
@@ -171,6 +185,7 @@ const users: SeedUser[] = [
   {
     username: "yerbol_s",
     name: "Ербол",
+    lastName: "Сатыбалдиев",
     city: "Астана",
     vibe: "DRAINED",
     occupation: "Строитель",
@@ -180,12 +195,23 @@ const users: SeedUser[] = [
   {
     username: "aliya_r",
     name: "Алия",
+    lastName: "Рахимова",
     city: "Астана",
     vibe: "CALM",
     bio: "Люблю тишину и хороший чай",
     contact: "@aliya_r",
     vibeAgeHours: 12,
     posts: [{ text: "Хочу тишины и никаких сообщений сегодня", ageMinutes: 500 }],
+  },
+  {
+    username: "daniyar_o",
+    name: "Данияр",
+    lastName: "Оспанов",
+    city: "Астана",
+    vibe: "WORK",
+    occupation: "Бухгалтер",
+    vibeAgeHours: 4,
+    posts: [{ text: "Закрываю отчёт, сегодня без движа", ageMinutes: 130 }],
   },
 ];
 
@@ -202,6 +228,7 @@ async function main() {
     data: {
       username: "demo",
       name: "Аяна",
+      lastName: "Демеубаева",
       city: "Астана",
       occupation: "Дизайнер",
       bio: "Захожу сюда после работы посмотреть, кто рядом на движе",
@@ -239,6 +266,7 @@ async function main() {
       data: {
         username: u.username,
         name: u.name,
+        lastName: u.lastName,
         city: u.city,
         occupation: u.occupation,
         bio: u.bio,

@@ -14,6 +14,7 @@ export async function PATCH(req: NextRequest) {
     const data: Prisma.UserUpdateInput = {};
 
     if (body.name !== undefined) data.name = normalizeName(body.name);
+    if (body.lastName !== undefined) data.lastName = normalizeOptional(body.lastName, "lastName", "Фамилия");
     if (body.city !== undefined) data.city = normalizeCity(body.city, body.otherCity);
     if (body.occupation !== undefined) data.occupation = normalizeOptional(body.occupation, "occupation", "Чем занимаешься");
     if (body.bio !== undefined) data.bio = normalizeOptional(body.bio, "bio", "О себе");

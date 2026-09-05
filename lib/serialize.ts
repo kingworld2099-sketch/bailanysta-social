@@ -5,6 +5,7 @@ export function publicUser(user: User) {
     id: user.id,
     username: user.username,
     name: user.name,
+    lastName: user.lastName,
     city: user.city,
     occupation: user.occupation,
     bio: user.bio,

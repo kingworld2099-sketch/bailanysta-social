@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { LIMITS, PHOTO_EXPIRY_HOURS } from "@/lib/config";
 import { placeSearchUrl } from "@/lib/place";
 import PhotoPicker from "./PhotoPicker";
+import MentionTextarea from "./MentionTextarea";
+import MentionText from "./MentionText";
 
 export default function EditablePostText({
   postId,
@@ -62,7 +64,9 @@ export default function EditablePostText({
     const meetLine = [place, plannedAt].filter(Boolean).join(" · ");
     return (
       <div className="mb-3">
-        <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{text}</p>
+        <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
+          <MentionText text={text} />
+        </p>
         {visiblePhotoUrl && (
           <img
             src={visiblePhotoUrl}
@@ -109,12 +113,12 @@ export default function EditablePostText({
 
   return (
     <div className="mb-3">
-      <textarea
+      <MentionTextarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={setText}
         rows={3}
         maxLength={LIMITS.postText.max}
-        className="w-full resize-none text-[15px]"
+        className="text-[15px]"
       />
       <div className="mb-1 mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <input

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getUserPosts } from "@/lib/feed";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
+import { fullName } from "@/lib/format";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import PostComposer from "@/components/PostComposer";
 import PostCard from "@/components/PostCard";
@@ -24,7 +25,7 @@ export default async function MePage() {
         style={{ borderLeft: `4px solid var(${VIBE_COLOR_VAR[vibe]})` }}
       >
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold">{user.name}</h1>
+          <h1 className="text-xl font-bold">{fullName(user)}</h1>
           <span
             className="rounded-full px-2 py-0.5 text-xs font-semibold"
             style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
@@ -45,7 +46,14 @@ export default async function MePage() {
 
         <div className="mt-2">
           <ProfileEditForm
-            user={{ name: user.name, city: user.city, occupation: user.occupation, bio: user.bio, contact: user.contact }}
+            user={{
+              name: user.name,
+              lastName: user.lastName,
+              city: user.city,
+              occupation: user.occupation,
+              bio: user.bio,
+              contact: user.contact,
+            }}
           />
         </div>
       </div>

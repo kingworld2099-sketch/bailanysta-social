@@ -4,10 +4,10 @@ import type { VibeCode } from "./config";
 
 export function postInclude(currentUserId: string | null) {
   return {
-    author: { select: { id: true, name: true, username: true, city: true, vibe: true } },
+    author: { select: { id: true, name: true, lastName: true, username: true, city: true, vibe: true } },
     comments: {
       orderBy: { createdAt: "asc" as const },
-      include: { author: { select: { id: true, name: true, username: true } } },
+      include: { author: { select: { id: true, name: true, lastName: true, username: true } } },
     },
     likes: { where: { userId: currentUserId ?? "__guest__" }, select: { id: true } },
     _count: { select: { likes: true, comments: true } },

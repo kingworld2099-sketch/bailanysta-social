@@ -4,6 +4,7 @@ import { getUserPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
+import { fullName } from "@/lib/format";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import BackToFeed from "@/components/BackToFeed";
@@ -29,7 +30,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
         style={{ borderLeft: `4px solid var(${VIBE_COLOR_VAR[vibe]})` }}
       >
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold">{profileUser.name}</h1>
+          <h1 className="text-xl font-bold">{fullName(profileUser)}</h1>
           <span
             className="rounded-full px-2 py-0.5 text-xs font-semibold"
             style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
