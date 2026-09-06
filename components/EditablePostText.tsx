@@ -103,7 +103,7 @@ export default function EditablePostText({
         )}
         {hasHiddenMeetInfo && (
           <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>
-            📍 Место и время скрыты — свяжитесь с автором
+            📍 Место и время скрыты — откроются, когда вы законнектитесь и отметите доверие в чате
           </p>
         )}
         {isOwn && (

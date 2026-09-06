@@ -7,12 +7,24 @@ export default function DeletePostButton({ postId }: { postId: string }) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   async function remove() {
     setIsDeleting(true);
     const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
     setIsDeleting(false);
-    if (res.ok) router.refresh();
+    if (res.ok) {
+      setDeleted(true);
+      router.refresh();
+    }
+  }
+
+  if (deleted) {
+    return (
+      <span className="text-sm" style={{ color: "var(--fg-muted)" }}>
+        Удаляю…
+      </span>
+    );
   }
 
   if (confirming) {
