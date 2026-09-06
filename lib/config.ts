@@ -5,6 +5,10 @@ export const CONNECT_CHAT_HOURS = 24;
 export const MAX_CONNECT_REQUESTS_PER_DAY = 10;
 export const CHAT_POLL_MS = 5000;
 
+export const AI_SEARCH_MODEL = "claude-haiku-4-5-20251001";
+export const AI_SEARCH_TIMEOUT_MS = 8000;
+export const AI_SEARCH_CANDIDATE_LIMIT = 80;
+
 export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 export const PHOTO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 

@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { ACTIVE_WINDOW_HOURS } from "./config";
+import { ACTIVE_WINDOW_HOURS, AI_SEARCH_CANDIDATE_LIMIT } from "./config";
 import { blockedUserIds, connectedUserIds } from "./connect";
 import { extractMentionUsernames } from "./mentions";
 import type { VibeCode } from "./config";
@@ -126,6 +126,18 @@ export async function searchPosts(q: string, currentUserId: string | null) {
     orderBy: { createdAt: "desc" },
     include: postInclude(currentUserId),
     take: 50,
+  });
+  return applyPrivacy(posts, currentUserId);
+}
+
+export async function getSearchCandidates(currentUserId: string) {
+  const blocked = await blockedUserIds(currentUserId);
+
+  const posts = await prisma.post.findMany({
+    where: blocked.length > 0 ? { authorId: { notIn: blocked } } : {},
+    orderBy: { createdAt: "desc" },
+    include: postInclude(currentUserId),
+    take: AI_SEARCH_CANDIDATE_LIMIT,
   });
   return applyPrivacy(posts, currentUserId);
 }
