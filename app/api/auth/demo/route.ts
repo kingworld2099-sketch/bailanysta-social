@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
     await createSessionCookie(user.id);
 
-    return NextResponse.redirect(new URL("/feed?onboarding=tips", req.url), { status: 303 });
+    return NextResponse.redirect(new URL("/feed", req.url), { status: 303 });
   } catch (e) {
     return apiError(e);
   }

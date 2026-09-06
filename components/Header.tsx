@@ -20,14 +20,14 @@ export default function Header({
 
         <div className="flex items-center gap-2">
           {user && (
-            <Link href="/search" aria-label="Поиск" className="btn btn-ghost !p-2 text-xl leading-none">
+            <Link id="tour-search-icon" href="/search" aria-label="Поиск" className="btn btn-ghost !p-2 text-xl leading-none">
               🔍
             </Link>
           )}
           <ThemeToggle />
           {user ? (
             <>
-              <Link href="/requests" aria-label="Запросы на связь" className="btn btn-ghost relative !p-2 text-xl leading-none">
+              <Link id="tour-requests-icon" href="/requests" aria-label="Запросы на связь" className="btn btn-ghost relative !p-2 text-xl leading-none">
                 🔔
                 {pendingRequests > 0 && (
                   <span

@@ -3,12 +3,13 @@ import { getCurrentUser } from "@/lib/session";
 import { getFeedPosts, getActiveCount } from "@/lib/feed";
 import { VIBE_COUNTER_PHRASE, VIBE_COLOR_VAR, VibeCode, cityInSentence } from "@/lib/config";
 import { formatPeopleCount } from "@/lib/format";
+import { FEED_TOUR_KEY, FEED_TOUR_STEPS } from "@/lib/tours";
 import VibeSwitcher from "@/components/VibeSwitcher";
 import FeedControls from "@/components/FeedControls";
 import PostComposer from "@/components/PostComposer";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
-import WelcomeModal from "@/components/WelcomeModal";
+import SpotlightTour from "@/components/SpotlightTour";
 import Link from "next/link";
 
 export default async function FeedPage({
@@ -39,11 +40,10 @@ export default async function FeedPage({
   ]);
 
   const cityLabel = city ? cityInSentence(city) : "всех городах";
-  const onboarding = params.onboarding === "tips" ? "tips" : "intro";
 
   return (
     <div>
-      <WelcomeModal variant={onboarding} />
+      <SpotlightTour tourKey={FEED_TOUR_KEY} steps={FEED_TOUR_STEPS} finishLabel="Погнали →" />
 
       <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-5">
         <div
@@ -53,7 +53,9 @@ export default async function FeedPage({
             borderColor: `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 35%, var(--border))`,
           }}
         >
-          <VibeSwitcher active={activeVibe} isLoggedIn searchParamsString={searchParamsString} />
+          <div id="tour-vibe-switcher">
+            <VibeSwitcher active={activeVibe} isLoggedIn searchParamsString={searchParamsString} />
+          </div>
 
           <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
             {activeCount === 0
@@ -64,7 +66,9 @@ export default async function FeedPage({
           <FeedControls isLoggedIn scope={scope} city={city} searchParamsString={searchParamsString} />
         </div>
 
-        <PostComposer vibe={user.vibe} />
+        <div id="tour-composer">
+          <PostComposer vibe={user.vibe} />
+        </div>
 
         {posts.length === 0 ? (
           <EmptyState

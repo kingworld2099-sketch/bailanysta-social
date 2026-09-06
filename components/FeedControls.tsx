@@ -27,7 +27,7 @@ export default function FeedControls({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
+    <div id="tour-scope-toggle" className="flex flex-wrap items-center justify-between gap-3">
       {isLoggedIn ? (
         <div className="inline-flex overflow-hidden rounded-full border" style={{ borderColor: "var(--border)" }}>
           <button
