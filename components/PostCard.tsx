@@ -25,7 +25,7 @@ export default function PostCard({
   const isOwn = currentUserId === post.author.id;
   const isConnected = isConnectedFor(post, currentUserId);
   const hasHiddenMeetInfo = !isConnected && !!(post.place || post.plannedAt);
-  const myRequest = post.myConnectRequest[0] ?? null;
+  const myRequest = post.connectRequests[0] ?? null;
 
   return (
     <article

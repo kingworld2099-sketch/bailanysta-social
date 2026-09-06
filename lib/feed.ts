@@ -11,7 +11,7 @@ export function postInclude(currentUserId: string | null) {
       include: { author: { select: { id: true, name: true, lastName: true, username: true } } },
     },
     likes: { where: { userId: currentUserId ?? "__guest__" }, select: { id: true } },
-    myConnectRequest: {
+    connectRequests: {
       where: { fromUserId: currentUserId ?? "__guest__" },
       select: { id: true, status: true },
     },
@@ -21,10 +21,10 @@ export function postInclude(currentUserId: string | null) {
 
 export type FeedPost = Awaited<ReturnType<typeof getFeedPosts>>[number];
 
-export function isConnectedFor(post: { authorId: string; myConnectRequest: { status: string }[] }, currentUserId: string | null) {
+export function isConnectedFor(post: { authorId: string; connectRequests: { status: string }[] }, currentUserId: string | null) {
   if (!currentUserId) return false;
   if (post.authorId === currentUserId) return true;
-  return post.myConnectRequest[0]?.status === "ACCEPTED";
+  return post.connectRequests[0]?.status === "ACCEPTED";
 }
 
 export async function getFeedPosts(opts: {
