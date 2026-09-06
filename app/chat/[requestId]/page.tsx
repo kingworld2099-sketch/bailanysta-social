@@ -4,10 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { fullName } from "@/lib/format";
 import { contactUrl } from "@/lib/contact";
 import { placeSearchUrl } from "@/lib/place";
-import { isRequestExpired } from "@/lib/connect";
+import { isRequestExpired, markChatRead } from "@/lib/connect";
 import BackToFeed from "@/components/BackToFeed";
 import ChatView from "@/components/ChatView";
 import TrustButton from "@/components/TrustButton";
+import ReportButton from "@/components/ReportButton";
 
 export default async function ChatPage({ params }: { params: Promise<{ requestId: string }> }) {
   const user = await getCurrentUser();
@@ -30,7 +31,18 @@ export default async function ChatPage({ params }: { params: Promise<{ requestId
   const other = request.fromUserId === user.id ? request.toUser : request.fromUser;
   const isActive = request.status === "ACCEPTED" && !isRequestExpired(request.expiresAt);
   const iAmFrom = request.fromUserId === user.id;
-  const iTrust = iAmFrom ? request.fromTrusts : request.toTrusts;
+
+  // My own flag — controls what the TrustButton shows and whether I've revealed MY info to them.
+  const myTrust = iAmFrom ? request.fromTrusts : request.toTrusts;
+  // Their own flag — controls whether THEY have revealed their info to me.
+  const otherTrusts = iAmFrom ? request.toTrusts : request.fromTrusts;
+  // The post's place/time belongs to its author (always toUser) — visible to the author
+  // unconditionally (it's their own data), and to the other side once the author trusts.
+  const canSeePlace = !iAmFrom || request.toTrusts;
+
+  if (request.status === "ACCEPTED") {
+    await markChatRead(request.id, user.id);
+  }
 
   const rawMessages = isActive
     ? await prisma.message.findMany({
@@ -54,14 +66,19 @@ export default async function ChatPage({ params }: { params: Promise<{ requestId
       <div className="card flex flex-col gap-1 p-4">
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-lg font-bold">Чат с {fullName(other)}</h1>
-          {request.status === "ACCEPTED" && <TrustButton requestId={request.id} initialTrusted={iTrust} />}
+          {request.status === "ACCEPTED" && <TrustButton requestId={request.id} initialTrusted={myTrust} />}
         </div>
-        {!iTrust && (
+        {!canSeePlace && (
           <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
-            🔒 Место, время и контакт скрыты — нажмите «Доверять», когда решите, что этому человеку можно верить
+            📍 Место и время скрыты — автор поста откроет их, когда решит вам довериться
           </p>
         )}
-        {iTrust && request.post.place && (
+        {!otherTrusts && (
+          <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
+            🔒 Контакт {fullName(other)} скрыт — откроется, когда {fullName(other)} нажмёт «Доверять»
+          </p>
+        )}
+        {canSeePlace && request.post.place && (
           <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
             📍{" "}
             <a href={placeSearchUrl(request.post.place)} target="_blank" rel="noopener noreferrer" className="underline">
@@ -70,11 +87,14 @@ export default async function ChatPage({ params }: { params: Promise<{ requestId
             {request.post.plannedAt ? ` · ${request.post.plannedAt}` : ""}
           </p>
         )}
-        {iTrust && other.contact && (
+        {otherTrusts && other.contact && (
           <a href={contactUrl(other.contact)} target="_blank" rel="noopener noreferrer" className="btn btn-secondary mt-1 w-fit !px-3 !py-1.5 text-sm">
             Связь: {other.contact}
           </a>
         )}
+        <div className="mt-1">
+          <ReportButton reportedUserId={other.id} context={`chat:${request.id}`} />
+        </div>
       </div>
 
       {isActive ? (

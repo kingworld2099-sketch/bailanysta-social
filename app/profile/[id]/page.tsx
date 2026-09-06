@@ -2,13 +2,15 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
-import { trustedUserIds } from "@/lib/connect";
+import { trustedUserIds, didIBlock } from "@/lib/connect";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
 import { fullName } from "@/lib/format";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import BackToFeed from "@/components/BackToFeed";
+import BlockButton from "@/components/BlockButton";
+import ReportButton from "@/components/ReportButton";
 
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -23,6 +25,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
   const isSelf = currentUser.id === profileUser.id;
   const isConnected = isSelf || (await trustedUserIds(currentUser.id)).has(profileUser.id);
+  const isBlocked = isSelf ? false : await didIBlock(currentUser.id, profileUser.id);
 
   const posts = await getUserPosts(profileUser.id, currentUser.id);
   const vibe = profileUser.vibe as VibeCode;
@@ -59,6 +62,13 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           >
             Написать
           </a>
+        )}
+
+        {!isSelf && (
+          <div className="mt-2 flex items-center gap-3">
+            <BlockButton userId={profileUser.id} initialBlocked={isBlocked} />
+            <ReportButton reportedUserId={profileUser.id} context={`profile:${profileUser.id}`} />
+          </div>
         )}
       </div>
 

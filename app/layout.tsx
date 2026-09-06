@@ -6,6 +6,7 @@ import BfcacheRefresh from "@/components/BfcacheRefresh";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { countUnseenLikes } from "@/lib/likes";
+import { countUnseenMessages } from "@/lib/connect";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,12 +43,13 @@ const themeInitScript = `
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = await getCurrentUser();
-  const [pendingRequests, unseenLikes] = user
+  const [pendingRequests, unseenLikes, unseenMessages] = user
     ? await Promise.all([
         prisma.connectRequest.count({ where: { toUserId: user.id, status: "PENDING" } }),
         countUnseenLikes(user.id, user.lastSeenLikesAt),
+        countUnseenMessages(user.id),
       ])
-    : [0, 0];
+    : [0, 0, 0];
 
   return (
     <html
@@ -61,7 +63,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col">
         <BfcacheRefresh />
-        <Header user={user ? { id: user.id, name: user.name } : null} pendingRequests={pendingRequests} unseenLikes={unseenLikes} />
+        <Header
+          user={user ? { id: user.id, name: user.name } : null}
+          pendingRequests={pendingRequests}
+          unseenLikes={unseenLikes}
+          unseenMessages={unseenMessages}
+          iconsSide={user?.headerIconsSide === "left" ? "left" : "right"}
+        />
         <main className="flex-1">{children}</main>
       </body>
     </html>

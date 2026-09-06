@@ -14,6 +14,10 @@ export function fullName(user: { name: string; lastName?: string | null }): stri
   return user.lastName ? `${user.name} ${user.lastName}` : user.name;
 }
 
+export function truncate(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+}
+
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
   "июля", "августа", "сентября", "октября", "ноября", "декабря",

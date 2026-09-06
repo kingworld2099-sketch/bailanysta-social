@@ -3,14 +3,10 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { getLikedPosts } from "@/lib/feed";
 import { getReceivedLikes, getReceivedCommentLikes, getLikedComments, markLikesSeen } from "@/lib/likes";
-import { fullName, formatRelativeTime } from "@/lib/format";
+import { fullName, formatRelativeTime, truncate } from "@/lib/format";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import BackToFeed from "@/components/BackToFeed";
-
-function truncate(text: string, max: number) {
-  return text.length > max ? `${text.slice(0, max)}…` : text;
-}
 
 export default async function LikesPage() {
   const user = await getCurrentUser();
@@ -41,7 +37,7 @@ export default async function LikesPage() {
                   <Link href={`/profile/${l.user.id}`} className="font-semibold">
                     {fullName(l.user)}
                   </Link>{" "}
-                  лайкнул(а) «{l.post.text.length > 40 ? `${l.post.text.slice(0, 40)}…` : l.post.text}»
+                  лайкнул(а) «{truncate(l.post.text, 40)}»
                 </span>
                 <span className="shrink-0 text-xs" style={{ color: "var(--fg-muted)" }}>
                   {formatRelativeTime(l.createdAt)}

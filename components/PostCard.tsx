@@ -8,6 +8,7 @@ import EditablePostText from "./EditablePostText";
 import { visiblePhotoUrl as getVisiblePhotoUrl } from "@/lib/photo";
 import { isConnectedFor } from "@/lib/feed";
 import ConnectButton from "./ConnectButton";
+import ReportButton from "./ReportButton";
 import type { FeedPost } from "@/lib/feed";
 
 export default function PostCard({
@@ -25,6 +26,8 @@ export default function PostCard({
   const isOwn = currentUserId === post.author.id;
   const isConnected = isConnectedFor(post, currentUserId);
   const hasHiddenMeetInfo = !isConnected && !!(post.place || post.plannedAt);
+  const hasHiddenPhoto = !isConnected && !!shownPhotoUrl;
+  const visiblePhotoUrl = isConnected ? shownPhotoUrl : null;
   const myRequest = post.connectRequests[0] ?? null;
 
   return (
@@ -62,8 +65,9 @@ export default function PostCard({
         initialPlace={isConnected ? post.place : null}
         initialPlannedAt={isConnected ? post.plannedAt : null}
         hasHiddenMeetInfo={hasHiddenMeetInfo}
-        visiblePhotoUrl={shownPhotoUrl}
+        visiblePhotoUrl={visiblePhotoUrl}
         hasExpiredPhoto={hasExpiredPhoto}
+        hasHiddenPhoto={hasHiddenPhoto}
         isOwn={isOwn}
         visibleMentions={post.visibleMentions}
       />
@@ -78,7 +82,11 @@ export default function PostCard({
           />
           <ConnectButton postId={post.id} isOwn={isOwn} myRequest={myRequest} />
         </div>
-        {isOwn && <DeletePostButton postId={post.id} />}
+        {isOwn ? (
+          <DeletePostButton postId={post.id} />
+        ) : (
+          isLoggedIn && <ReportButton reportedUserId={post.author.id} context={`post:${post.id}`} />
+        )}
       </div>
 
       <div className="mt-3 border-t pt-3" style={{ borderColor: "var(--border)" }}>

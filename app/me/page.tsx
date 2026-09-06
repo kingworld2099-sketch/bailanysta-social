@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getUserPosts } from "@/lib/feed";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
-import { contactUrl } from "@/lib/contact";
 import { fullName } from "@/lib/format";
 import { PROFILE_TOUR_STEPS } from "@/lib/tours";
 import ProfileEditForm from "@/components/ProfileEditForm";
@@ -11,6 +10,7 @@ import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import BackToFeed from "@/components/BackToFeed";
 import SpotlightTour from "@/components/SpotlightTour";
+import SettingsSection from "@/components/SettingsSection";
 
 export default async function MePage() {
   const user = await getCurrentUser();
@@ -46,9 +46,9 @@ export default async function MePage() {
         {user.bio && <p className="text-sm">{user.bio}</p>}
         <div id="tour-contact">
           {user.contact ? (
-            <a href={contactUrl(user.contact)} target="_blank" rel="noopener noreferrer" className="btn btn-secondary mt-1 w-fit">
-              Ваша ссылка для связи
-            </a>
+            <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
+              Контакт для связи: {user.contact}
+            </p>
           ) : (
             <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
               Контакт не указан — добавь его ниже, чтобы люди могли с тобой связаться после доверия
@@ -68,6 +68,10 @@ export default async function MePage() {
             }}
           />
         </div>
+      </div>
+
+      <div id="tour-settings">
+        <SettingsSection initialIconsSide={user.headerIconsSide === "left" ? "left" : "right"} />
       </div>
 
       <PostComposer vibe={user.vibe} />

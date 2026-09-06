@@ -29,7 +29,7 @@ export default function MentionText({
               </Link>
             )}
             {mention && username && !revealAll && !visible.has(username) && (
-              <span title="Отметка скрыта — пользователь ещё не законнектился с вами" style={{ color: "var(--fg-muted)" }}>
+              <span title="Отметка скрыта — этот человек ещё не доверился вам в чате" style={{ color: "var(--fg-muted)" }}>
                 @•••
               </span>
             )}

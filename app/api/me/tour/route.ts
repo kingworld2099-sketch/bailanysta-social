@@ -13,6 +13,11 @@ export async function POST(req: NextRequest) {
       await prisma.user.update({ where: { id: user.id }, data: { seenProfileTour: true } });
     } else if (body.tour === "feed") {
       await prisma.user.update({ where: { id: user.id }, data: { seenFeedTour: true } });
+    } else if (body.tour === "reset") {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { seenProfileTour: false, seenFeedTour: false },
+      });
     } else {
       throw new ValidationError("Неизвестный тур");
     }

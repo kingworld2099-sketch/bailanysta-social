@@ -78,6 +78,11 @@ export default function SpotlightTour({
     });
   }
 
+  function skip() {
+    dismiss();
+    if (finishHref) router.push(finishHref);
+  }
+
   function next() {
     if (index >= steps.length - 1) {
       dismiss();
@@ -106,7 +111,7 @@ export default function SpotlightTour({
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={dismiss} />
+      <div className="fixed inset-0 z-40" onClick={skip} />
       <div ref={spotlightRef} className="fixed z-40 transition-all duration-200" style={{ pointerEvents: "none" }} />
 
       <div
@@ -132,7 +137,7 @@ export default function SpotlightTour({
         </p>
 
         <div className="flex items-center justify-between gap-2">
-          <button type="button" onClick={dismiss} className="text-sm" style={{ color: "var(--fg-muted)" }}>
+          <button type="button" onClick={skip} className="text-sm" style={{ color: "var(--fg-muted)" }}>
             Пропустить
           </button>
           <button type="button" onClick={next} className="btn btn-primary !px-4 !py-2 text-sm">

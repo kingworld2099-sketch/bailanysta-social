@@ -38,6 +38,7 @@ model User {
   seenProfileTour Boolean   @default(false)
   seenFeedTour    Boolean   @default(false)
   lastSeenLikesAt DateTime?
+  headerIconsSide String    @default("right")
 
   posts    Post[]
   likes    Like[]
@@ -50,6 +51,9 @@ model User {
 
   blocksMade    Block[] @relation("BlocksMade")
   blocksAgainst Block[] @relation("BlocksAgainst")
+
+  reportsFiled    Report[] @relation("ReportsFiled")
+  reportsReceived Report[] @relation("ReportsReceived")
 
   @@index([city, vibe, vibeUpdatedAt])
 }
@@ -117,6 +121,8 @@ model ConnectRequest {
   status     ConnectStatus @default(PENDING)
   fromTrusts Boolean       @default(false)
   toTrusts   Boolean       @default(false)
+  fromLastReadAt DateTime?
+  toLastReadAt   DateTime?
   createdAt  DateTime      @default(now())
   expiresAt  DateTime?
 
@@ -153,4 +159,18 @@ model Block {
   blocked User @relation("BlocksAgainst", fields: [blockedId], references: [id], onDelete: Cascade)
 
   @@unique([blockerId, blockedId])
+}
+
+model Report {
+  id             String   @id @default(uuid())
+  reporterId     String
+  reportedUserId String
+  context        String
+  reason         String?
+  createdAt      DateTime @default(now())
+
+  reporter     User @relation("ReportsFiled", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser User @relation("ReportsReceived", fields: [reportedUserId], references: [id], onDelete: Cascade)
+
+  @@index([reportedUserId, createdAt])
 }

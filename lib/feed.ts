@@ -18,7 +18,7 @@ export function postInclude(currentUserId: string | null) {
     likes: { where: { userId: currentUserId ?? "__guest__" }, select: { id: true } },
     connectRequests: {
       where: { fromUserId: currentUserId ?? "__guest__" },
-      select: { id: true, status: true, fromTrusts: true },
+      select: { id: true, status: true, toTrusts: true },
     },
     _count: { select: { likes: true, comments: true } },
   };
@@ -26,15 +26,19 @@ export function postInclude(currentUserId: string | null) {
 
 export type FeedPost = Awaited<ReturnType<typeof getFeedPosts>>[number];
 
-/** Chat accepted only opens the mini-chat. The author's meetup place/time stays hidden until the viewer clicks "Доверять" on them. */
+/**
+ * Chat accepted only opens the mini-chat. The author's meetup place/time/photo stay hidden
+ * from the viewer until the AUTHOR clicks "Доверять" on them — the viewer's own trust flag
+ * has no effect on what they can see, it only reveals the viewer's info to the author.
+ */
 export function isConnectedFor(
-  post: { authorId: string; connectRequests: { status: string; fromTrusts: boolean }[] },
+  post: { authorId: string; connectRequests: { status: string; toTrusts: boolean }[] },
   currentUserId: string | null
 ) {
   if (!currentUserId) return false;
   if (post.authorId === currentUserId) return true;
   const request = post.connectRequests[0];
-  return request?.status === "ACCEPTED" && request.fromTrusts;
+  return request?.status === "ACCEPTED" && request.toTrusts;
 }
 
 async function applyPrivacy<

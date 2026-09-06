@@ -20,6 +20,7 @@ export default async function FeedPage({
   const params = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  if (!user.seenProfileTour) redirect("/me");
 
   const cityParam = typeof params.city === "string" ? params.city : undefined;
   const city = cityParam === "all" ? null : cityParam || user.city;

@@ -58,6 +58,11 @@ export function normalizeOptional(raw: unknown, field: keyof typeof LIMITS, labe
   return value;
 }
 
+export function normalizeIconsSide(raw: unknown): "left" | "right" {
+  if (raw === "left" || raw === "right") return raw;
+  throw new ValidationError("Некорректная сторона значков");
+}
+
 export function normalizeVibe(raw: unknown): VibeCode {
   if (typeof raw === "string" && (VIBES as readonly string[]).includes(raw)) {
     return raw as VibeCode;

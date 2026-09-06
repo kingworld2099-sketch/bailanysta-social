@@ -17,6 +17,14 @@ export async function isBlockedPair(aId: string, bId: string): Promise<boolean> 
   return !!block;
 }
 
+export async function didIBlock(blockerId: string, blockedId: string): Promise<boolean> {
+  const block = await prisma.block.findUnique({
+    where: { blockerId_blockedId: { blockerId, blockedId } },
+    select: { id: true },
+  });
+  return !!block;
+}
+
 export async function blockedUserIds(userId: string): Promise<string[]> {
   const blocks = await prisma.block.findMany({
     where: { OR: [{ blockerId: userId }, { blockedId: userId }] },
@@ -31,9 +39,10 @@ export async function blockedUserIds(userId: string): Promise<string[]> {
 }
 
 /**
- * Users this person has decided to trust — accepting a connect request only opens the chat;
- * identity (username, contact, meetup place) stays hidden until they click "Доверять"
- * on that specific person after actually talking to them.
+ * Users whose identity is visible to this person — accepting a connect request only opens
+ * the chat; each side's username, contact and meetup place stay hidden from the other until
+ * THEY click "Доверять" and reveal their own info. Clicking "Доверять" never unlocks the other
+ * person's info for yourself — it only opens your own info to them.
  */
 export async function trustedUserIds(userId: string): Promise<Set<string>> {
   const requests = await prisma.connectRequest.findMany({
@@ -44,7 +53,8 @@ export async function trustedUserIds(userId: string): Promise<Set<string>> {
   const ids = new Set<string>();
   for (const r of requests) {
     const iAmFrom = r.fromUserId === userId;
-    if (iAmFrom ? r.fromTrusts : r.toTrusts) {
+    // The OTHER side's own trust flag decides whether I can see THEM.
+    if (iAmFrom ? r.toTrusts : r.fromTrusts) {
       ids.add(iAmFrom ? r.toUserId : r.fromUserId);
     }
   }
@@ -53,6 +63,48 @@ export async function trustedUserIds(userId: string): Promise<Set<string>> {
 
 export function isRequestExpired(expiresAt: Date | null): boolean {
   return !expiresAt || expiresAt.getTime() <= Date.now();
+}
+
+export async function markChatRead(requestId: string, userId: string) {
+  const request = await prisma.connectRequest.findUnique({
+    where: { id: requestId },
+    select: { fromUserId: true, toUserId: true },
+  });
+  if (!request) return;
+  const isFrom = request.fromUserId === userId;
+  await prisma.connectRequest.update({
+    where: { id: requestId },
+    data: isFrom ? { fromLastReadAt: new Date() } : { toLastReadAt: new Date() },
+  });
+}
+
+export async function countUnseenMessages(userId: string): Promise<number> {
+  const requests = await prisma.connectRequest.findMany({
+    where: { status: "ACCEPTED", OR: [{ fromUserId: userId }, { toUserId: userId }] },
+    select: {
+      id: true,
+      fromUserId: true,
+      toUserId: true,
+      fromLastReadAt: true,
+      toLastReadAt: true,
+      expiresAt: true,
+    },
+  });
+
+  const active = requests.filter((r) => !isRequestExpired(r.expiresAt));
+  if (active.length === 0) return 0;
+
+  const counts = await Promise.all(
+    active.map((r) => {
+      const iAmFrom = r.fromUserId === userId;
+      const lastReadAt = iAmFrom ? r.fromLastReadAt : r.toLastReadAt;
+      return prisma.message.count({
+        where: { requestId: r.id, authorId: { not: userId }, createdAt: { gt: lastReadAt ?? new Date(0) } },
+      });
+    })
+  );
+
+  return counts.reduce((sum, c) => sum + c, 0);
 }
 
 export async function getActiveChat(requestId: string, userId: string) {

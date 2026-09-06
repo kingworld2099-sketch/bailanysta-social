@@ -16,6 +16,7 @@ export default function EditablePostText({
   hasHiddenMeetInfo,
   visiblePhotoUrl,
   hasExpiredPhoto,
+  hasHiddenPhoto,
   isOwn,
   visibleMentions,
 }: {
@@ -26,6 +27,7 @@ export default function EditablePostText({
   hasHiddenMeetInfo: boolean;
   visiblePhotoUrl: string | null;
   hasExpiredPhoto: boolean;
+  hasHiddenPhoto: boolean;
   isOwn: boolean;
   visibleMentions?: string[];
 }) {
@@ -84,6 +86,11 @@ export default function EditablePostText({
             Фото было доступно {PHOTO_EXPIRY_HOURS} часов и уже исчезло
           </p>
         )}
+        {!visiblePhotoUrl && !hasExpiredPhoto && hasHiddenPhoto && (
+          <p className="mt-2 text-xs" style={{ color: "var(--fg-muted)" }}>
+            🔒 Фото скрыто — автор откроет его, когда решит вам довериться в чате
+          </p>
+        )}
         {meetLine && (
           <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>
             📍{" "}
@@ -103,7 +110,7 @@ export default function EditablePostText({
         )}
         {hasHiddenMeetInfo && (
           <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>
-            📍 Место и время скрыты — откроются, когда вы законнектитесь и отметите доверие в чате
+            📍 Место и время скрыты — автор откроет их, когда решит вам довериться в чате
           </p>
         )}
         {isOwn && (

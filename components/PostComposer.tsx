@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LIMITS, VIBES, VIBE_LABELS, VIBE_COLOR_VAR, VibeCode, PHOTO_EXPIRY_HOURS } from "@/lib/config";
+import { LIMITS, VIBE_LABELS, VIBE_COLOR_VAR, VibeCode, PHOTO_EXPIRY_HOURS } from "@/lib/config";
 import PhotoPicker from "./PhotoPicker";
 import MentionTextarea from "./MentionTextarea";
 
 export default function PostComposer({ vibe }: { vibe: VibeCode }) {
   const router = useRouter();
   const [text, setText] = useState("");
-  const [selectedVibe, setSelectedVibe] = useState<VibeCode>(vibe);
   const [place, setPlace] = useState("");
   const [plannedAt, setPlannedAt] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -30,7 +29,7 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
     const res = await fetch("/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, vibe: selectedVibe, place, plannedAt, photoUrl }),
+      body: JSON.stringify({ text, vibe, place, plannedAt, photoUrl }),
     });
 
     setIsSubmitting(false);
@@ -51,31 +50,17 @@ export default function PostComposer({ vibe }: { vibe: VibeCode }) {
   return (
     <div
       className="card p-4"
-      style={{ borderColor: `var(${VIBE_COLOR_VAR[selectedVibe]})` }}
+      style={{ borderColor: `var(${VIBE_COLOR_VAR[vibe]})` }}
     >
-      <div className="mb-3 flex flex-wrap gap-2">
-        {VIBES.map((v) => {
-          const active = v === selectedVibe;
-          return (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setSelectedVibe(v)}
-              className="chip"
-              style={
-                active
-                  ? {
-                      background: `var(${VIBE_COLOR_VAR[v]})`,
-                      borderColor: `var(${VIBE_COLOR_VAR[v]})`,
-                      color: "#fff",
-                    }
-                  : undefined
-              }
-            >
-              {VIBE_LABELS[v]}
-            </button>
-          );
-        })}
+      <div className="mb-3 flex items-center gap-2 text-sm" style={{ color: "var(--fg-muted)" }}>
+        <span>Вайб поста:</span>
+        <span
+          className="chip"
+          style={{ background: `var(${VIBE_COLOR_VAR[vibe]})`, borderColor: `var(${VIBE_COLOR_VAR[vibe]})`, color: "#fff" }}
+        >
+          {VIBE_LABELS[vibe]}
+        </span>
+        <span className="text-xs">меняется переключателем вверху ленты</span>
       </div>
 
       <MentionTextarea
