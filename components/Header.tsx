@@ -4,9 +4,11 @@ import ThemeToggle from "./ThemeToggle";
 export default function Header({
   user,
   pendingRequests,
+  unseenLikes,
 }: {
   user: { id: string; name: string } | null;
   pendingRequests: number;
+  unseenLikes: number;
 }) {
   return (
     <header
@@ -27,6 +29,17 @@ export default function Header({
           <ThemeToggle />
           {user ? (
             <>
+              <Link href="/likes" aria-label="Лайки" className="btn btn-ghost relative !p-2 text-xl leading-none">
+                ❤️
+                {unseenLikes > 0 && (
+                  <span
+                    className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold"
+                    style={{ background: "var(--danger)", color: "#fff" }}
+                  >
+                    {unseenLikes}
+                  </span>
+                )}
+              </Link>
               <Link id="tour-requests-icon" href="/requests" aria-label="Запросы на связь" className="btn btn-ghost relative !p-2 text-xl leading-none">
                 🔔
                 {pendingRequests > 0 && (

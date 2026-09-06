@@ -147,6 +147,33 @@ export async function getSearchCandidates(currentUserId: string) {
   return applyPrivacy(posts, currentUserId);
 }
 
+export async function getLikedPosts(userId: string) {
+  const likes = await prisma.like.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    select: { postId: true },
+  });
+  if (likes.length === 0) return [];
+
+  const blocked = await blockedUserIds(userId);
+  const postIds = likes.map((l) => l.postId);
+
+  const posts = await prisma.post.findMany({
+    where: {
+      id: { in: postIds },
+      ...(blocked.length > 0 ? { authorId: { notIn: blocked } } : {}),
+    },
+    include: postInclude(userId),
+  });
+
+  const byId = new Map(posts.map((p) => [p.id, p]));
+  const ordered = postIds
+    .map((id) => byId.get(id))
+    .filter((p): p is (typeof posts)[number] => !!p);
+
+  return applyPrivacy(ordered, userId);
+}
+
 export async function getActiveCount(city: string | null, vibe: VibeCode) {
   const since = new Date(Date.now() - ACTIVE_WINDOW_HOURS * 60 * 60 * 1000);
 
