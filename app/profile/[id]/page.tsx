@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
-import { connectedUserIds } from "@/lib/connect";
+import { trustedUserIds } from "@/lib/connect";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
 import { fullName } from "@/lib/format";
@@ -22,7 +22,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
   if (!profileUser) notFound();
 
   const isSelf = currentUser.id === profileUser.id;
-  const isConnected = isSelf || (await connectedUserIds(currentUser.id)).has(profileUser.id);
+  const isConnected = isSelf || (await trustedUserIds(currentUser.id)).has(profileUser.id);
 
   const posts = await getUserPosts(profileUser.id, currentUser.id);
   const vibe = profileUser.vibe as VibeCode;

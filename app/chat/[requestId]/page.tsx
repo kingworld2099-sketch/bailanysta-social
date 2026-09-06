@@ -7,6 +7,7 @@ import { placeSearchUrl } from "@/lib/place";
 import { isRequestExpired } from "@/lib/connect";
 import BackToFeed from "@/components/BackToFeed";
 import ChatView from "@/components/ChatView";
+import TrustButton from "@/components/TrustButton";
 
 export default async function ChatPage({ params }: { params: Promise<{ requestId: string }> }) {
   const user = await getCurrentUser();
@@ -28,6 +29,8 @@ export default async function ChatPage({ params }: { params: Promise<{ requestId
 
   const other = request.fromUserId === user.id ? request.toUser : request.fromUser;
   const isActive = request.status === "ACCEPTED" && !isRequestExpired(request.expiresAt);
+  const iAmFrom = request.fromUserId === user.id;
+  const iTrust = iAmFrom ? request.fromTrusts : request.toTrusts;
 
   const rawMessages = isActive
     ? await prisma.message.findMany({
@@ -49,8 +52,16 @@ export default async function ChatPage({ params }: { params: Promise<{ requestId
       <BackToFeed />
 
       <div className="card flex flex-col gap-1 p-4">
-        <h1 className="text-lg font-bold">Чат с {fullName(other)}</h1>
-        {isActive && request.post.place && (
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-lg font-bold">Чат с {fullName(other)}</h1>
+          {request.status === "ACCEPTED" && <TrustButton requestId={request.id} initialTrusted={iTrust} />}
+        </div>
+        {!iTrust && (
+          <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
+            🔒 Место, время и контакт скрыты — нажмите «Доверять», когда решите, что этому человеку можно верить
+          </p>
+        )}
+        {iTrust && request.post.place && (
           <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
             📍{" "}
             <a href={placeSearchUrl(request.post.place)} target="_blank" rel="noopener noreferrer" className="underline">
@@ -59,7 +70,7 @@ export default async function ChatPage({ params }: { params: Promise<{ requestId
             {request.post.plannedAt ? ` · ${request.post.plannedAt}` : ""}
           </p>
         )}
-        {isActive && other.contact && (
+        {iTrust && other.contact && (
           <a href={contactUrl(other.contact)} target="_blank" rel="noopener noreferrer" className="btn btn-secondary mt-1 w-fit !px-3 !py-1.5 text-sm">
             Связь: {other.contact}
           </a>

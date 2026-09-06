@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { apiError } from "@/lib/api";
-import { connectedUserIds } from "@/lib/connect";
+import { trustedUserIds } from "@/lib/connect";
 
 export async function GET(req: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
     if (!q) return NextResponse.json({ users: [] });
 
-    const connected = await connectedUserIds(user.id);
+    const connected = await trustedUserIds(user.id);
     if (connected.size === 0) return NextResponse.json({ users: [] });
 
     const users = await prisma.user.findMany({

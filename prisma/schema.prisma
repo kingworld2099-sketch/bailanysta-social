@@ -96,6 +96,8 @@ model ConnectRequest {
   toUserId   String
   postId     String
   status     ConnectStatus @default(PENDING)
+  fromTrusts Boolean       @default(false)
+  toTrusts   Boolean       @default(false)
   createdAt  DateTime      @default(now())
   expiresAt  DateTime?
 

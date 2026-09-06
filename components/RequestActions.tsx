@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function RequestActions({ requestId }: { requestId: string }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function respond(action: "accept" | "decline") {
@@ -22,7 +23,16 @@ export default function RequestActions({ requestId }: { requestId: string }) {
       return;
     }
 
+    setDone(true);
     router.refresh();
+  }
+
+  if (done) {
+    return (
+      <span className="text-sm" style={{ color: "var(--fg-muted)" }}>
+        Готово…
+      </span>
+    );
   }
 
   return (

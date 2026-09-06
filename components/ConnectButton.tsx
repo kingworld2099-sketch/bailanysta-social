@@ -17,6 +17,7 @@ export default function ConnectButton({
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [justSent, setJustSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (isOwn) return null;
@@ -29,7 +30,7 @@ export default function ConnectButton({
     );
   }
 
-  if (myRequest?.status === "PENDING") {
+  if (myRequest?.status === "PENDING" || justSent) {
     return (
       <span className="text-sm" style={{ color: "var(--fg-muted)" }}>
         Запрос отправлен
@@ -59,6 +60,7 @@ export default function ConnectButton({
       return;
     }
 
+    setJustSent(true);
     router.refresh();
   }
 

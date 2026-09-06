@@ -30,15 +30,23 @@ export async function blockedUserIds(userId: string): Promise<string[]> {
   return [...ids];
 }
 
-export async function connectedUserIds(userId: string): Promise<Set<string>> {
+/**
+ * Users this person has decided to trust — accepting a connect request only opens the chat;
+ * identity (username, contact, meetup place) stays hidden until they click "Доверять"
+ * on that specific person after actually talking to them.
+ */
+export async function trustedUserIds(userId: string): Promise<Set<string>> {
   const requests = await prisma.connectRequest.findMany({
     where: { status: "ACCEPTED", OR: [{ fromUserId: userId }, { toUserId: userId }] },
-    select: { fromUserId: true, toUserId: true },
+    select: { fromUserId: true, toUserId: true, fromTrusts: true, toTrusts: true },
   });
 
   const ids = new Set<string>();
   for (const r of requests) {
-    ids.add(r.fromUserId === userId ? r.toUserId : r.fromUserId);
+    const iAmFrom = r.fromUserId === userId;
+    if (iAmFrom ? r.fromTrusts : r.toTrusts) {
+      ids.add(iAmFrom ? r.toUserId : r.fromUserId);
+    }
   }
   return ids;
 }

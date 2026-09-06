@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 import { ACTIVE_WINDOW_HOURS, AI_SEARCH_CANDIDATE_LIMIT } from "./config";
-import { blockedUserIds, connectedUserIds } from "./connect";
+import { blockedUserIds, trustedUserIds } from "./connect";
 import { extractMentionUsernames } from "./mentions";
 import type { VibeCode } from "./config";
 
@@ -14,7 +14,7 @@ export function postInclude(currentUserId: string | null) {
     likes: { where: { userId: currentUserId ?? "__guest__" }, select: { id: true } },
     connectRequests: {
       where: { fromUserId: currentUserId ?? "__guest__" },
-      select: { id: true, status: true },
+      select: { id: true, status: true, fromTrusts: true },
     },
     _count: { select: { likes: true, comments: true } },
   };
@@ -22,10 +22,15 @@ export function postInclude(currentUserId: string | null) {
 
 export type FeedPost = Awaited<ReturnType<typeof getFeedPosts>>[number];
 
-export function isConnectedFor(post: { authorId: string; connectRequests: { status: string }[] }, currentUserId: string | null) {
+/** Chat accepted only opens the mini-chat. The author's meetup place/time stays hidden until the viewer clicks "Доверять" on them. */
+export function isConnectedFor(
+  post: { authorId: string; connectRequests: { status: string; fromTrusts: boolean }[] },
+  currentUserId: string | null
+) {
   if (!currentUserId) return false;
   if (post.authorId === currentUserId) return true;
-  return post.connectRequests[0]?.status === "ACCEPTED";
+  const request = post.connectRequests[0];
+  return request?.status === "ACCEPTED" && request.fromTrusts;
 }
 
 async function applyPrivacy<
@@ -35,7 +40,7 @@ async function applyPrivacy<
     comments: { text: string; author: { id: string; username: string } }[];
   },
 >(posts: T[], currentUserId: string | null) {
-  const connected = currentUserId ? await connectedUserIds(currentUserId) : new Set<string>();
+  const connected = currentUserId ? await trustedUserIds(currentUserId) : new Set<string>();
   const visibleAuthor = (authorId: string) => authorId === currentUserId || connected.has(authorId);
 
   const mentioned = new Set<string>();
