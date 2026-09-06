@@ -1,8 +1,5 @@
 import type { TourStep } from "@/components/SpotlightTour";
 
-export const PROFILE_TOUR_KEY = "bailanysta-tour-profile-v1";
-export const FEED_TOUR_KEY = "bailanysta-tour-feed-v1";
-
 export const PROFILE_TOUR_STEPS: TourStep[] = [
   {
     selector: "#tour-username",

@@ -4,7 +4,7 @@ import { getUserPosts } from "@/lib/feed";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
 import { fullName } from "@/lib/format";
-import { PROFILE_TOUR_KEY, PROFILE_TOUR_STEPS } from "@/lib/tours";
+import { PROFILE_TOUR_STEPS } from "@/lib/tours";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import PostComposer from "@/components/PostComposer";
 import PostCard from "@/components/PostCard";
@@ -21,7 +21,13 @@ export default async function MePage() {
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-6">
-      <SpotlightTour tourKey={PROFILE_TOUR_KEY} steps={PROFILE_TOUR_STEPS} finishHref="/feed" finishLabel="Перейти в ленту →" />
+      <SpotlightTour
+        tourName="profile"
+        initiallySeen={user.seenProfileTour}
+        steps={PROFILE_TOUR_STEPS}
+        finishHref="/feed"
+        finishLabel="Перейти в ленту →"
+      />
       <BackToFeed />
       <div
         className="card flex flex-col gap-2 p-5"

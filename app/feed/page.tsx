@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getFeedPosts, getActiveCount } from "@/lib/feed";
 import { VIBE_COUNTER_PHRASE, VIBE_COLOR_VAR, VibeCode, cityInSentence } from "@/lib/config";
 import { formatPeopleCount } from "@/lib/format";
-import { FEED_TOUR_KEY, FEED_TOUR_STEPS } from "@/lib/tours";
+import { FEED_TOUR_STEPS } from "@/lib/tours";
 import VibeSwitcher from "@/components/VibeSwitcher";
 import FeedControls from "@/components/FeedControls";
 import PostComposer from "@/components/PostComposer";
@@ -43,7 +43,7 @@ export default async function FeedPage({
 
   return (
     <div>
-      <SpotlightTour tourKey={FEED_TOUR_KEY} steps={FEED_TOUR_STEPS} finishLabel="Погнали →" />
+      <SpotlightTour tourName="feed" initiallySeen={user.seenFeedTour} steps={FEED_TOUR_STEPS} finishLabel="Погнали →" />
 
       <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-5">
         <div

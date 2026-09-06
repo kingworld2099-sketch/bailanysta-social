@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export type TourStep = {
@@ -9,27 +9,6 @@ export type TourStep = {
   text: string;
 };
 
-function subscribeFactory(key: string) {
-  return (callback: () => void) => {
-    window.addEventListener(key, callback);
-    return () => window.removeEventListener(key, callback);
-  };
-}
-
-function hasSeen(key: string): () => boolean {
-  return () => {
-    try {
-      return !!localStorage.getItem(key);
-    } catch {
-      return true;
-    }
-  };
-}
-
-function getServerSnapshot() {
-  return true;
-}
-
 function isTypingTarget(el: Element | null): boolean {
   if (!el) return false;
   const tag = el.tagName;
@@ -37,21 +16,24 @@ function isTypingTarget(el: Element | null): boolean {
 }
 
 export default function SpotlightTour({
-  tourKey,
+  tourName,
+  initiallySeen,
   steps,
   finishHref,
   finishLabel = "Готово",
 }: {
-  tourKey: string;
+  tourName: "profile" | "feed";
+  initiallySeen: boolean;
   steps: TourStep[];
   finishHref?: string;
   finishLabel?: string;
 }) {
   const router = useRouter();
-  const seen = useSyncExternalStore(subscribeFactory(tourKey), hasSeen(tourKey), getServerSnapshot);
+  const [dismissed, setDismissed] = useState(false);
   const [index, setIndex] = useState(0);
   const spotlightRef = useRef<HTMLDivElement>(null);
 
+  const seen = initiallySeen || dismissed;
   const step = steps[index];
 
   const positionSpotlight = useCallback(() => {
@@ -86,12 +68,14 @@ export default function SpotlightTour({
   }, [seen, positionSpotlight]);
 
   function dismiss() {
-    try {
-      localStorage.setItem(tourKey, "1");
-    } catch {
-      // ignore
-    }
-    window.dispatchEvent(new Event(tourKey));
+    setDismissed(true);
+    fetch("/api/me/tour", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tour: tourName }),
+    }).catch(() => {
+      // best-effort — worst case the tour shows again next visit
+    });
   }
 
   function next() {

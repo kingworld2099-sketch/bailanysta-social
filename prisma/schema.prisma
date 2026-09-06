@@ -35,6 +35,9 @@ model User {
   vibeUpdatedAt DateTime @default(now())
   createdAt     DateTime @default(now())
 
+  seenProfileTour Boolean @default(false)
+  seenFeedTour    Boolean @default(false)
+
   posts    Post[]
   likes    Like[]
   comments Comment[]
