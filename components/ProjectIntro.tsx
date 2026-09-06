@@ -1,12 +1,25 @@
 export default function ProjectIntro() {
   return (
-    <div className="mb-6 rounded-2xl p-4 text-sm" style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)" }}>
-      <p className="mb-1 font-semibold">Bailanysta 👋</p>
-      <p style={{ color: "var(--fg-muted)" }}>
-        Не лента по подпискам. Ты отмечаешь свой вайб — На движе, Спокойно, Выжат или В работе —
-        и видишь тех, кто в твоём городе чувствует то же самое прямо сейчас. Понравился пост —
-        отправляешь запрос на связь, и после согласия открываются место, время и контакт.
-      </p>
+    <div className="mb-6 flex flex-col gap-3">
+      <div className="rounded-2xl p-4 text-sm" style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)" }}>
+        <p className="mb-1 font-semibold">Bailanysta 👋</p>
+        <p style={{ color: "var(--fg-muted)" }}>
+          Не лента по подпискам. Ты отмечаешь свой вайб — На движе, Спокойно, Выжат или В работе —
+          и видишь тех, кто в твоём городе чувствует то же самое прямо сейчас. Понравился пост —
+          отправляешь запрос на связь, и после согласия открываются место, время и контакт.
+        </p>
+      </div>
+      <div
+        className="rounded-2xl p-4 text-sm"
+        style={{ background: "color-mix(in srgb, var(--accent) 14%, transparent)", border: "1px solid var(--accent)" }}
+      >
+        <p className="mb-1 font-semibold">🔒 Максимально приватно и анонимно</p>
+        <p style={{ color: "var(--fg-muted)" }}>
+          Без входа лента вообще не видна. Логин, место встречи и контакт скрыты от всех, пока
+          человек сам не согласится на связь. Отказ — без объяснений и без повторных попыток.
+          Переписка после согласия живёт 24 часа и потом исчезает без следа.
+        </p>
+      </div>
     </div>
   );
 }
