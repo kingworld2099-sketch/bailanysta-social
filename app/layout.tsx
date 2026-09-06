@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import BfcacheRefresh from "@/components/BfcacheRefresh";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
@@ -55,6 +56,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col">
+        <BfcacheRefresh />
         <Header user={user ? { id: user.id, name: user.name } : null} pendingRequests={pendingRequests} />
         <main className="flex-1">{children}</main>
       </body>
