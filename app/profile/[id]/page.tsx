@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
@@ -17,9 +17,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
     getCurrentUser(),
   ]);
 
+  if (!currentUser) redirect("/login");
   if (!profileUser) notFound();
 
-  const posts = await getUserPosts(profileUser.id, currentUser?.id ?? null);
+  const posts = await getUserPosts(profileUser.id, currentUser.id);
   const vibe = profileUser.vibe as VibeCode;
 
   return (
@@ -60,7 +61,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
         <EmptyState title="Пока ничего не публиковал" />
       ) : (
         posts.map((post) => (
-          <PostCard key={post.id} post={post} currentUserId={currentUser?.id ?? null} isLoggedIn={!!currentUser} />
+          <PostCard key={post.id} post={post} currentUserId={currentUser.id} isLoggedIn />
         ))
       )}
     </div>

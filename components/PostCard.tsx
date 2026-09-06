@@ -6,6 +6,8 @@ import CommentsSection from "./CommentsSection";
 import DeletePostButton from "./DeletePostButton";
 import EditablePostText from "./EditablePostText";
 import { visiblePhotoUrl as getVisiblePhotoUrl } from "@/lib/photo";
+import { isConnectedFor } from "@/lib/feed";
+import ConnectButton from "./ConnectButton";
 import type { FeedPost } from "@/lib/feed";
 
 export default function PostCard({
@@ -20,6 +22,10 @@ export default function PostCard({
   const vibe = post.vibe as VibeCode;
   const shownPhotoUrl = getVisiblePhotoUrl(post.photoUrl, post.createdAt);
   const hasExpiredPhoto = !!post.photoUrl && !shownPhotoUrl;
+  const isOwn = currentUserId === post.author.id;
+  const isConnected = isConnectedFor(post, currentUserId);
+  const hasHiddenMeetInfo = !isConnected && !!(post.place || post.plannedAt);
+  const myRequest = post.myConnectRequest[0] ?? null;
 
   return (
     <article
@@ -51,11 +57,12 @@ export default function PostCard({
       <EditablePostText
         postId={post.id}
         initialText={post.text}
-        initialPlace={post.place}
-        initialPlannedAt={post.plannedAt}
+        initialPlace={isConnected ? post.place : null}
+        initialPlannedAt={isConnected ? post.plannedAt : null}
+        hasHiddenMeetInfo={hasHiddenMeetInfo}
         visiblePhotoUrl={shownPhotoUrl}
         hasExpiredPhoto={hasExpiredPhoto}
-        isOwn={currentUserId === post.author.id}
+        isOwn={isOwn}
       />
 
       <div className="flex items-center justify-between">
@@ -66,8 +73,9 @@ export default function PostCard({
             initialCount={post._count.likes}
             isLoggedIn={isLoggedIn}
           />
+          <ConnectButton postId={post.id} isOwn={isOwn} myRequest={myRequest} />
         </div>
-        {currentUserId === post.author.id && <DeletePostButton postId={post.id} />}
+        {isOwn && <DeletePostButton postId={post.id} />}
       </div>
 
       <div className="mt-3 border-t pt-3" style={{ borderColor: "var(--border)" }}>

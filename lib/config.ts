@@ -1,6 +1,10 @@
 export const ACTIVE_WINDOW_HOURS = 48;
 export const PHOTO_EXPIRY_HOURS = 8;
 
+export const CONNECT_CHAT_HOURS = 24;
+export const MAX_CONNECT_REQUESTS_PER_DAY = 10;
+export const CHAT_POLL_MS = 5000;
+
 export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 export const PHOTO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -55,4 +59,5 @@ export const LIMITS = {
   commentText: { min: 1, max: 300 },
   place: { max: 80 },
   plannedAt: { max: 40 },
+  messageText: { min: 1, max: 500 },
 };

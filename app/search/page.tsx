@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { searchPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
 import SearchBox from "@/components/SearchBox";
@@ -9,11 +10,13 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
   const { q } = await searchParams;
   const query = (q ?? "").trim();
-  const user = await getCurrentUser();
 
-  const posts = query ? await searchPosts(query, user?.id ?? null) : [];
+  const posts = query ? await searchPosts(query, user.id) : [];
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-6">
@@ -26,7 +29,7 @@ export default async function SearchPage({
       {query && posts.length === 0 && <EmptyState title={`По запросу «${query}» ничего не нашли`} />}
 
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} currentUserId={user?.id ?? null} isLoggedIn={!!user} />
+        <PostCard key={post.id} post={post} currentUserId={user.id} isLoggedIn />
       ))}
     </div>
   );

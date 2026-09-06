@@ -92,3 +92,13 @@ export function validateCommentText(raw: unknown): string {
   }
   return value;
 }
+
+export function validateMessageText(raw: unknown): string {
+  if (typeof raw !== "string") throw new ValidationError("Сообщение не может быть пустым");
+  const value = raw.trim();
+  const { min, max } = LIMITS.messageText;
+  if (value.length < min || value.length > max) {
+    throw new ValidationError(`Сообщение должно быть от ${min} до ${max} символов`);
+  }
+  return value;
+}

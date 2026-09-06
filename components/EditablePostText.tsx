@@ -13,6 +13,7 @@ export default function EditablePostText({
   initialText,
   initialPlace,
   initialPlannedAt,
+  hasHiddenMeetInfo,
   visiblePhotoUrl,
   hasExpiredPhoto,
   isOwn,
@@ -21,6 +22,7 @@ export default function EditablePostText({
   initialText: string;
   initialPlace: string | null;
   initialPlannedAt: string | null;
+  hasHiddenMeetInfo: boolean;
   visiblePhotoUrl: string | null;
   hasExpiredPhoto: boolean;
   isOwn: boolean;
@@ -95,6 +97,11 @@ export default function EditablePostText({
             ) : null}
             {place && plannedAt ? " · " : null}
             {plannedAt}
+          </p>
+        )}
+        {hasHiddenMeetInfo && (
+          <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>
+            📍 Место и время скрыты — свяжитесь с автором
           </p>
         )}
         {isOwn && (

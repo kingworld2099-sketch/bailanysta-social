@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,9 @@ const themeInitScript = `
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = await getCurrentUser();
+  const pendingRequests = user
+    ? await prisma.connectRequest.count({ where: { toUserId: user.id, status: "PENDING" } })
+    : 0;
 
   return (
     <html
@@ -47,7 +51,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <Header user={user ? { id: user.id, name: user.name } : null} />
+        <Header user={user ? { id: user.id, name: user.name } : null} pendingRequests={pendingRequests} />
         <main className="flex-1">{children}</main>
       </body>
     </html>

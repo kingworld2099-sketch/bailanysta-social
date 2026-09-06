@@ -1,9 +1,11 @@
 import Link from "next/link";
 import LoginForm from "@/components/LoginForm";
+import ProjectIntro from "@/components/ProjectIntro";
 
 export default function LoginPage() {
   return (
     <div className="mx-auto max-w-sm px-4 py-8">
+      <ProjectIntro />
       <h1 className="mb-6 text-2xl font-bold">Вход</h1>
       <LoginForm />
 

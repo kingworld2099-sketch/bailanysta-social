@@ -1,8 +1,8 @@
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getFeedPosts, getActiveCount } from "@/lib/feed";
-import { DEFAULT_CITY, VIBES, VIBE_COUNTER_PHRASE, VIBE_COLOR_VAR, VibeCode, cityInSentence } from "@/lib/config";
+import { VIBE_COUNTER_PHRASE, VIBE_COLOR_VAR, VibeCode, cityInSentence } from "@/lib/config";
 import { formatPeopleCount } from "@/lib/format";
-import GuestBanner from "@/components/GuestBanner";
 import VibeSwitcher from "@/components/VibeSwitcher";
 import FeedControls from "@/components/FeedControls";
 import PostComposer from "@/components/PostComposer";
@@ -11,10 +11,6 @@ import EmptyState from "@/components/EmptyState";
 import WelcomeModal from "@/components/WelcomeModal";
 import Link from "next/link";
 
-function isVibe(v: unknown): v is VibeCode {
-  return typeof v === "string" && (VIBES as readonly string[]).includes(v);
-}
-
 export default async function FeedPage({
   searchParams,
 }: {
@@ -22,24 +18,14 @@ export default async function FeedPage({
 }) {
   const params = await searchParams;
   const user = await getCurrentUser();
+  if (!user) redirect("/login");
 
   const cityParam = typeof params.city === "string" ? params.city : undefined;
-  const city = cityParam === "all" ? null : cityParam || (user ? user.city : DEFAULT_CITY);
+  const city = cityParam === "all" ? null : cityParam || user.city;
 
-  let activeVibe: VibeCode | null;
-  let scope: "mine" | "all";
-  let vibeFilter: VibeCode | null;
-
-  if (user) {
-    scope = params.scope === "all" ? "all" : "mine";
-    activeVibe = user.vibe;
-    vibeFilter = scope === "mine" ? user.vibe : null;
-  } else {
-    scope = "mine";
-    const vibeParam = typeof params.vibe === "string" ? params.vibe : undefined;
-    activeVibe = vibeParam === "all" ? null : isVibe(vibeParam) ? vibeParam : "MOVE";
-    vibeFilter = activeVibe;
-  }
+  const scope: "mine" | "all" = params.scope === "all" ? "all" : "mine";
+  const activeVibe: VibeCode = user.vibe;
+  const vibeFilter: VibeCode | null = scope === "mine" ? user.vibe : null;
 
   const searchParamsString = new URLSearchParams(
     Object.entries(params).flatMap(([k, v]) =>
@@ -48,8 +34,8 @@ export default async function FeedPage({
   ).toString();
 
   const [posts, activeCount] = await Promise.all([
-    getFeedPosts({ city, vibe: vibeFilter, currentUserId: user?.id ?? null }),
-    activeVibe ? getActiveCount(city, activeVibe) : Promise.resolve(null),
+    getFeedPosts({ city, vibe: vibeFilter, currentUserId: user.id }),
+    getActiveCount(city, activeVibe),
   ]);
 
   const cityLabel = city ? cityInSentence(city) : "всех городах";
@@ -58,36 +44,27 @@ export default async function FeedPage({
   return (
     <div>
       <WelcomeModal variant={onboarding} />
-      {!user && <GuestBanner />}
 
       <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-5">
         <div
           className="card flex flex-col gap-3 p-4"
           style={{
-            background: activeVibe
-              ? `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 8%, var(--bg-elevated))`
-              : undefined,
-            borderColor: activeVibe ? `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 35%, var(--border))` : undefined,
+            background: `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 8%, var(--bg-elevated))`,
+            borderColor: `color-mix(in srgb, var(${VIBE_COLOR_VAR[activeVibe]}) 35%, var(--border))`,
           }}
         >
-          <VibeSwitcher active={activeVibe} isLoggedIn={!!user} searchParamsString={searchParamsString} />
+          <VibeSwitcher active={activeVibe} isLoggedIn searchParamsString={searchParamsString} />
 
-          {activeVibe && activeCount !== null ? (
-            <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
-              {activeCount === 0
-                ? "Пока никого — ты первый"
-                : `Сейчас в ${cityLabel} ${VIBE_COUNTER_PHRASE[activeVibe]} — ${formatPeopleCount(activeCount)}`}
-            </p>
-          ) : (
-            <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
-              Показаны все вайбы
-            </p>
-          )}
+          <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
+            {activeCount === 0
+              ? "Пока никого — ты первый"
+              : `Сейчас в ${cityLabel} ${VIBE_COUNTER_PHRASE[activeVibe]} — ${formatPeopleCount(activeCount)}`}
+          </p>
 
-          <FeedControls isLoggedIn={!!user} scope={scope} city={city} searchParamsString={searchParamsString} />
+          <FeedControls isLoggedIn scope={scope} city={city} searchParamsString={searchParamsString} />
         </div>
 
-        {user && <PostComposer vibe={user.vibe} />}
+        <PostComposer vibe={user.vibe} />
 
         {posts.length === 0 ? (
           <EmptyState
@@ -97,15 +74,13 @@ export default async function FeedPage({
                 : `Сейчас в ${cityLabel} ещё нет постов`
             }
             action={
-              <Link href="/feed?vibe=all&city=all&scope=all" className="btn btn-primary">
+              <Link href="/feed?city=all&scope=all" className="btn btn-primary">
                 Показать все
               </Link>
             }
           />
         ) : (
-          posts.map((post) => (
-            <PostCard key={post.id} post={post} currentUserId={user?.id ?? null} isLoggedIn={!!user} />
-          ))
+          posts.map((post) => <PostCard key={post.id} post={post} currentUserId={user.id} isLoggedIn />)
         )}
       </div>
     </div>
