@@ -11,7 +11,7 @@ type CommentItem = {
   id: string;
   text: string;
   createdAt: string | Date;
-  author: { id: string; name: string; lastName: string | null; username: string };
+  author: { id: string; name: string; lastName: string | null; username: string | null };
 };
 
 export default function CommentsSection({
@@ -78,7 +78,8 @@ export default function CommentsSection({
                 {fullName(c.author)}
               </Link>{" "}
               <span style={{ color: "var(--fg-muted)" }}>
-                @{c.author.username} · {formatRelativeTime(c.createdAt)}
+                {c.author.username && `@${c.author.username} · `}
+                {formatRelativeTime(c.createdAt)}
               </span>
               <p>
                 <MentionText text={c.text} />

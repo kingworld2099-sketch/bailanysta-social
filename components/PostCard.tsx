@@ -45,9 +45,11 @@ export default function PostCard({
               {VIBE_LABELS[vibe]}
             </span>
           </div>
-          <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
-            @{post.author.username}
-          </span>
+          {post.author.username && (
+            <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
+              @{post.author.username}
+            </span>
+          )}
         </div>
         <span className="text-xs" style={{ color: "var(--fg-muted)" }}>
           {formatRelativeTime(post.createdAt)}

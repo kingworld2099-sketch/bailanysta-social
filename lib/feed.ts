@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 import { ACTIVE_WINDOW_HOURS } from "./config";
-import { blockedUserIds } from "./connect";
+import { blockedUserIds, connectedUserIds } from "./connect";
 import type { VibeCode } from "./config";
 
 export function postInclude(currentUserId: string | null) {
@@ -27,6 +27,22 @@ export function isConnectedFor(post: { authorId: string; connectRequests: { stat
   return post.connectRequests[0]?.status === "ACCEPTED";
 }
 
+async function withUsernamePrivacy<
+  T extends { author: { id: string; username: string }; comments: { author: { id: string; username: string } }[] },
+>(posts: T[], currentUserId: string | null) {
+  const connected = currentUserId ? await connectedUserIds(currentUserId) : new Set<string>();
+  const visible = (authorId: string) => authorId === currentUserId || connected.has(authorId);
+
+  return posts.map((post) => ({
+    ...post,
+    author: { ...post.author, username: visible(post.author.id) ? post.author.username : null },
+    comments: post.comments.map((c) => ({
+      ...c,
+      author: { ...c.author, username: visible(c.author.id) ? c.author.username : null },
+    })),
+  }));
+}
+
 export async function getFeedPosts(opts: {
   city: string | null;
   vibe: VibeCode | null;
@@ -46,12 +62,13 @@ export async function getFeedPosts(opts: {
     if (blocked.length > 0) where.authorId = { notIn: blocked };
   }
 
-  return prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     where,
     orderBy: { createdAt: "desc" },
     include: postInclude(opts.currentUserId),
     take: 100,
   });
+  return withUsernamePrivacy(posts, opts.currentUserId);
 }
 
 export async function getUserPosts(authorId: string, currentUserId: string | null) {
@@ -60,11 +77,12 @@ export async function getUserPosts(authorId: string, currentUserId: string | nul
     if (blocked.includes(authorId)) return [];
   }
 
-  return prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     where: { authorId },
     orderBy: { createdAt: "desc" },
     include: postInclude(currentUserId),
   });
+  return withUsernamePrivacy(posts, currentUserId);
 }
 
 export async function searchPosts(q: string, currentUserId: string | null) {
@@ -78,12 +96,13 @@ export async function searchPosts(q: string, currentUserId: string | null) {
     if (blocked.length > 0) where.authorId = { notIn: blocked };
   }
 
-  return prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     where,
     orderBy: { createdAt: "desc" },
     include: postInclude(currentUserId),
     take: 50,
   });
+  return withUsernamePrivacy(posts, currentUserId);
 }
 
 export async function getActiveCount(city: string | null, vibe: VibeCode) {

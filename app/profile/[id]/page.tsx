@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserPosts } from "@/lib/feed";
 import { getCurrentUser } from "@/lib/session";
+import { connectedUserIds } from "@/lib/connect";
 import { VIBE_LABELS, VIBE_COLOR_VAR, VibeCode } from "@/lib/config";
 import { contactUrl } from "@/lib/contact";
 import { fullName } from "@/lib/format";
@@ -19,6 +20,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
   if (!currentUser) redirect("/login");
   if (!profileUser) notFound();
+
+  const isSelf = currentUser.id === profileUser.id;
+  const isConnected = isSelf || (await connectedUserIds(currentUser.id)).has(profileUser.id);
 
   const posts = await getUserPosts(profileUser.id, currentUser.id);
   const vibe = profileUser.vibe as VibeCode;
@@ -40,12 +44,13 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           </span>
         </div>
         <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
-          @{profileUser.username} · {profileUser.city}
+          {isConnected && `@${profileUser.username} · `}
+          {profileUser.city}
         </p>
         {profileUser.occupation && <p className="text-sm">{profileUser.occupation}</p>}
         {profileUser.bio && <p className="text-sm">{profileUser.bio}</p>}
 
-        {profileUser.contact && (
+        {isConnected && profileUser.contact && (
           <a
             href={contactUrl(profileUser.contact)}
             target="_blank"

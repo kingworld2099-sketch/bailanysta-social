@@ -30,6 +30,19 @@ export async function blockedUserIds(userId: string): Promise<string[]> {
   return [...ids];
 }
 
+export async function connectedUserIds(userId: string): Promise<Set<string>> {
+  const requests = await prisma.connectRequest.findMany({
+    where: { status: "ACCEPTED", OR: [{ fromUserId: userId }, { toUserId: userId }] },
+    select: { fromUserId: true, toUserId: true },
+  });
+
+  const ids = new Set<string>();
+  for (const r of requests) {
+    ids.add(r.fromUserId === userId ? r.toUserId : r.fromUserId);
+  }
+  return ids;
+}
+
 export function isRequestExpired(expiresAt: Date | null): boolean {
   return !expiresAt || expiresAt.getTime() <= Date.now();
 }
