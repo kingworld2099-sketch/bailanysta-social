@@ -1,6 +1,7 @@
 import { prisma } from "./prisma";
 import { ACTIVE_WINDOW_HOURS } from "./config";
 import { blockedUserIds, connectedUserIds } from "./connect";
+import { extractMentionUsernames } from "./mentions";
 import type { VibeCode } from "./config";
 
 export function postInclude(currentUserId: string | null) {
@@ -27,18 +28,42 @@ export function isConnectedFor(post: { authorId: string; connectRequests: { stat
   return post.connectRequests[0]?.status === "ACCEPTED";
 }
 
-async function withUsernamePrivacy<
-  T extends { author: { id: string; username: string }; comments: { author: { id: string; username: string } }[] },
+async function applyPrivacy<
+  T extends {
+    text: string;
+    author: { id: string; username: string };
+    comments: { text: string; author: { id: string; username: string } }[];
+  },
 >(posts: T[], currentUserId: string | null) {
   const connected = currentUserId ? await connectedUserIds(currentUserId) : new Set<string>();
-  const visible = (authorId: string) => authorId === currentUserId || connected.has(authorId);
+  const visibleAuthor = (authorId: string) => authorId === currentUserId || connected.has(authorId);
+
+  const mentioned = new Set<string>();
+  for (const post of posts) {
+    for (const u of extractMentionUsernames(post.text)) mentioned.add(u);
+    for (const c of post.comments) {
+      for (const u of extractMentionUsernames(c.text)) mentioned.add(u);
+    }
+  }
+
+  let visibleMentions: string[] = [];
+  if (currentUserId && mentioned.size > 0) {
+    const mentionedUsers = await prisma.user.findMany({
+      where: { username: { in: [...mentioned] } },
+      select: { id: true, username: true },
+    });
+    visibleMentions = mentionedUsers
+      .filter((u) => visibleAuthor(u.id))
+      .map((u) => u.username.toLowerCase());
+  }
 
   return posts.map((post) => ({
     ...post,
-    author: { ...post.author, username: visible(post.author.id) ? post.author.username : null },
+    visibleMentions,
+    author: { ...post.author, username: visibleAuthor(post.author.id) ? post.author.username : null },
     comments: post.comments.map((c) => ({
       ...c,
-      author: { ...c.author, username: visible(c.author.id) ? c.author.username : null },
+      author: { ...c.author, username: visibleAuthor(c.author.id) ? c.author.username : null },
     })),
   }));
 }
@@ -68,7 +93,7 @@ export async function getFeedPosts(opts: {
     include: postInclude(opts.currentUserId),
     take: 100,
   });
-  return withUsernamePrivacy(posts, opts.currentUserId);
+  return applyPrivacy(posts, opts.currentUserId);
 }
 
 export async function getUserPosts(authorId: string, currentUserId: string | null) {
@@ -82,7 +107,7 @@ export async function getUserPosts(authorId: string, currentUserId: string | nul
     orderBy: { createdAt: "desc" },
     include: postInclude(currentUserId),
   });
-  return withUsernamePrivacy(posts, currentUserId);
+  return applyPrivacy(posts, currentUserId);
 }
 
 export async function searchPosts(q: string, currentUserId: string | null) {
@@ -102,7 +127,7 @@ export async function searchPosts(q: string, currentUserId: string | null) {
     include: postInclude(currentUserId),
     take: 50,
   });
-  return withUsernamePrivacy(posts, currentUserId);
+  return applyPrivacy(posts, currentUserId);
 }
 
 export async function getActiveCount(city: string | null, vibe: VibeCode) {

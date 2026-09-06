@@ -64,7 +64,7 @@ export default function ConnectButton({
 
   return (
     <div>
-      <button type="button" onClick={send} disabled={isSubmitting} className="text-sm font-semibold" style={{ color: "var(--accent)" }}>
+      <button type="button" onClick={send} disabled={isSubmitting} className="btn btn-primary !px-3 !py-1.5 text-sm">
         {isSubmitting ? "Отправляю…" : "Хочу законнектиться"}
       </button>
       {error && (

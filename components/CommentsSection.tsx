@@ -18,10 +18,14 @@ export default function CommentsSection({
   postId,
   initialComments,
   isLoggedIn,
+  currentUserId,
+  visibleMentions,
 }: {
   postId: string;
   initialComments: CommentItem[];
   isLoggedIn: boolean;
+  currentUserId?: string | null;
+  visibleMentions?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState(initialComments);
@@ -82,7 +86,7 @@ export default function CommentsSection({
                 {formatRelativeTime(c.createdAt)}
               </span>
               <p>
-                <MentionText text={c.text} />
+                <MentionText text={c.text} visibleMentions={visibleMentions} revealAll={c.author.id === currentUserId} />
               </p>
             </div>
           ))}

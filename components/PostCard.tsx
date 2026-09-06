@@ -65,6 +65,7 @@ export default function PostCard({
         visiblePhotoUrl={shownPhotoUrl}
         hasExpiredPhoto={hasExpiredPhoto}
         isOwn={isOwn}
+        visibleMentions={post.visibleMentions}
       />
 
       <div className="flex items-center justify-between">
@@ -81,7 +82,13 @@ export default function PostCard({
       </div>
 
       <div className="mt-3 border-t pt-3" style={{ borderColor: "var(--border)" }}>
-        <CommentsSection postId={post.id} initialComments={post.comments} isLoggedIn={isLoggedIn} />
+        <CommentsSection
+          postId={post.id}
+          initialComments={post.comments}
+          isLoggedIn={isLoggedIn}
+          currentUserId={currentUserId}
+          visibleMentions={post.visibleMentions}
+        />
       </div>
     </article>
   );

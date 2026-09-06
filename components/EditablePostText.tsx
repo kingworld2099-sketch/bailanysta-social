@@ -17,6 +17,7 @@ export default function EditablePostText({
   visiblePhotoUrl,
   hasExpiredPhoto,
   isOwn,
+  visibleMentions,
 }: {
   postId: string;
   initialText: string;
@@ -26,6 +27,7 @@ export default function EditablePostText({
   visiblePhotoUrl: string | null;
   hasExpiredPhoto: boolean;
   isOwn: boolean;
+  visibleMentions?: string[];
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -67,7 +69,7 @@ export default function EditablePostText({
     return (
       <div className="mb-3">
         <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
-          <MentionText text={text} />
+          <MentionText text={text} visibleMentions={visibleMentions} revealAll={isOwn} />
         </p>
         {visiblePhotoUrl && (
           <img
