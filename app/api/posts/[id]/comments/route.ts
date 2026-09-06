@@ -20,7 +20,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       include: { author: { select: { id: true, name: true, lastName: true, username: true } } },
     });
 
-    return NextResponse.json({ comment }, { status: 201 });
+    return NextResponse.json(
+      { comment: { ...comment, likes: [], _count: { likes: 0 } } },
+      { status: 201 }
+    );
   } catch (e) {
     return apiError(e);
   }

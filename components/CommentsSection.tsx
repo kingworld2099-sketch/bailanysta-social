@@ -6,12 +6,15 @@ import GuestModal from "./GuestModal";
 import { formatRelativeTime, fullName } from "@/lib/format";
 import { LIMITS } from "@/lib/config";
 import MentionText from "./MentionText";
+import CommentLikeButton from "./CommentLikeButton";
 
 type CommentItem = {
   id: string;
   text: string;
   createdAt: string | Date;
   author: { id: string; name: string; lastName: string | null; username: string | null };
+  likes: { id: string }[];
+  _count: { likes: number };
 };
 
 export default function CommentsSection({
@@ -88,6 +91,12 @@ export default function CommentsSection({
               <p>
                 <MentionText text={c.text} visibleMentions={visibleMentions} revealAll={c.author.id === currentUserId} />
               </p>
+              <CommentLikeButton
+                commentId={c.id}
+                initialLiked={c.likes.length > 0}
+                initialCount={c._count.likes}
+                isLoggedIn={isLoggedIn}
+              />
             </div>
           ))}
 

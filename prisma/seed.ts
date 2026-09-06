@@ -41,6 +41,12 @@ const users: SeedUser[] = [
         place: "Кофейня на Туран",
         plannedAt: "прямо сейчас",
       },
+      {
+        text: "Живот уже подводит, кто идёт перекусить бургер?",
+        ageMinutes: 10,
+        place: "Бургерная у Триумфа",
+        plannedAt: "через 15 минут",
+      },
     ],
   },
   {
@@ -59,6 +65,7 @@ const users: SeedUser[] = [
         plannedAt: "через полчаса",
       },
       { text: "Погода отличная, не хочу домой в такой вечер", ageMinutes: 20 },
+      { text: "Взял велик напрокат, катаю по набережной — красота", ageMinutes: 25 },
     ],
   },
   {
@@ -71,7 +78,14 @@ const users: SeedUser[] = [
     bio: "Тишина — моя суперсила",
     contact: "@asel_almaty",
     vibeAgeHours: 5,
-    posts: [{ text: "Сижу дома с чаем, никуда не тороплюсь сегодня", ageMinutes: 180 }],
+    posts: [
+      { text: "Сижу дома с чаем, никуда не тороплюсь сегодня", ageMinutes: 180 },
+      {
+        text: "Гуляю с собакой в парке, никуда не спешим",
+        ageMinutes: 60,
+        place: "Парк Первого Президента",
+      },
+    ],
   },
   {
     username: "erlan_t",
@@ -109,7 +123,10 @@ const users: SeedUser[] = [
     vibe: "DRAINED",
     occupation: "Таксист",
     vibeAgeHours: 4,
-    posts: [{ text: "Выжат как лимон после смены, хочу просто тишины", ageMinutes: 200 }],
+    posts: [
+      { text: "Выжат как лимон после смены, хочу просто тишины", ageMinutes: 200 },
+      { text: "Мама приболела, весь день у неё, самому тяжко", ageMinutes: 220 },
+    ],
   },
   {
     username: "sabina_z",
@@ -130,7 +147,15 @@ const users: SeedUser[] = [
     occupation: "Фотограф",
     contact: "@timur_photo",
     vibeAgeHours: 2,
-    posts: [{ text: "Свободен весь вечер, ищу с кем зависнуть в центре", ageMinutes: 50 }],
+    posts: [
+      { text: "Свободен весь вечер, ищу с кем зависнуть в центре", ageMinutes: 50 },
+      {
+        text: "Иду на концерт вечером, ищу кто со мной",
+        ageMinutes: 45,
+        place: "Дворец Независимости",
+        plannedAt: "в 19:00",
+      },
+    ],
   },
   {
     username: "zhanna_a",
@@ -150,7 +175,10 @@ const users: SeedUser[] = [
     vibe: "WORK",
     occupation: "Менеджер проектов",
     vibeAgeHours: 3,
-    posts: [{ text: "Весь день на созвонах, но задача наконец интересная", ageMinutes: 100 }],
+    posts: [
+      { text: "Весь день на созвонах, но задача наконец интересная", ageMinutes: 100 },
+      { text: "Проверяю контрольные всю ночь, кофе уже не спасает", ageMinutes: 80 },
+    ],
   },
   {
     username: "karina_o",
@@ -180,7 +208,10 @@ const users: SeedUser[] = [
     vibe: "CALM",
     occupation: "Дизайнер",
     vibeAgeHours: 10,
-    posts: [{ text: "Ничего не хочу, просто наслаждаюсь тишиной дома", ageMinutes: 400 }],
+    posts: [
+      { text: "Ничего не хочу, просто наслаждаюсь тишиной дома", ageMinutes: 400 },
+      { text: "Купила новую куртку, теперь хочу дефилировать по проспекту", ageMinutes: 50 },
+    ],
   },
   {
     username: "yerbol_s",
@@ -211,12 +242,85 @@ const users: SeedUser[] = [
     vibe: "WORK",
     occupation: "Бухгалтер",
     vibeAgeHours: 4,
-    posts: [{ text: "Закрываю отчёт, сегодня без движа", ageMinutes: 130 }],
+    posts: [
+      { text: "Закрываю отчёт, сегодня без движа", ageMinutes: 130 },
+      { text: "Третий час кручу телефон, сна ни в одном глазу", ageMinutes: 15 },
+    ],
+  },
+  {
+    username: "asylzhan_p",
+    name: "Асылжан",
+    lastName: "Пернебаев",
+    city: "Астана",
+    vibe: "MOVE",
+    occupation: "Тренер по кроссфиту",
+    bio: "Ищу партнёра на утреннюю тренировку",
+    vibeAgeHours: 1,
+    posts: [
+      {
+        text: "Ищу напарника на пробежку, погода отличная",
+        ageMinutes: 20,
+        place: "Набережная Есиль",
+        plannedAt: "через 10 минут",
+      },
+    ],
+  },
+  {
+    username: "gaukhar_i",
+    name: "Гаухар",
+    lastName: "Испаева",
+    city: "Астана",
+    vibe: "CALM",
+    occupation: "Ветеринар",
+    bio: "После работы гуляю с питомцами клиентов",
+    vibeAgeHours: 3,
+    posts: [{ text: "Забрала домой щенка на передержку, вечер теперь с ним", ageMinutes: 90 }],
+  },
+  {
+    username: "arman_zh",
+    name: "Арман",
+    lastName: "Жаксыбеков",
+    city: "Шымкент",
+    vibe: "WORK",
+    occupation: "Студент",
+    bio: "Сессия, готовлюсь к экзаменам",
+    vibeAgeHours: 2,
+    posts: [{ text: "Готовлюсь к экзамену, библиотека закрывается в 22", ageMinutes: 60 }],
+  },
+  {
+    username: "dana_t",
+    name: "Дана",
+    lastName: "Тлеубердиева",
+    city: "Караганда",
+    vibe: "DRAINED",
+    occupation: "Медсестра",
+    bio: "Сутки в больнице выматывают",
+    vibeAgeHours: 3,
+    posts: [{ text: "Отработала сутки, еле держусь на ногах", ageMinutes: 30 }],
+  },
+  {
+    username: "bekzat_o",
+    name: "Бекзат",
+    lastName: "Оразбаев",
+    city: "Актобе",
+    vibe: "MOVE",
+    occupation: "Музыкант",
+    bio: "Играю на гитаре в баре по выходным",
+    vibeAgeHours: 1,
+    posts: [
+      {
+        text: "Сегодня выступление в баре, потом хочется погулять по городу",
+        ageMinutes: 15,
+        place: "Бар Old Fashion",
+        plannedAt: "после 22:00",
+      },
+    ],
   },
 ];
 
 async function main() {
   console.log("Очищаю таблицы...");
+  await prisma.commentLike.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.like.deleteMany();
   await prisma.post.deleteMany();
@@ -306,6 +410,7 @@ async function main() {
   ];
 
   let commentIndex = 0;
+  const createdComments = [];
   for (let i = 0; i < createdPosts.length; i++) {
     const post = createdPosts[i];
     if (i % 2 === 0) continue;
@@ -316,9 +421,10 @@ async function main() {
     }
 
     if (i % 3 === 0) {
-      const commenter = allUsers.find((u) => u.id !== post.authorId);
+      const eligibleCommenters = allUsers.filter((u) => u.id !== post.authorId);
+      const commenter = eligibleCommenters[commentIndex % eligibleCommenters.length];
       if (commenter) {
-        await prisma.comment.create({
+        const comment = await prisma.comment.create({
           data: {
             authorId: commenter.id,
             postId: post.id,
@@ -326,8 +432,19 @@ async function main() {
             createdAt: minutesAgo(5),
           },
         });
+        createdComments.push(comment);
         commentIndex++;
       }
+    }
+  }
+
+  console.log("Добавляю лайки на комментарии...");
+  for (let i = 0; i < createdComments.length; i++) {
+    if (i % 2 !== 0) continue;
+    const comment = createdComments[i];
+    const likers = allUsers.filter((u) => u.id !== comment.authorId).slice(0, (i % 3) + 1);
+    for (const liker of likers) {
+      await prisma.commentLike.create({ data: { userId: liker.id, commentId: comment.id } });
     }
   }
 

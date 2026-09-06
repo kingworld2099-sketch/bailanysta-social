@@ -42,6 +42,7 @@ model User {
   posts    Post[]
   likes    Like[]
   comments Comment[]
+  commentLikes CommentLike[]
 
   sentRequests     ConnectRequest[] @relation("SentRequests")
   receivedRequests ConnectRequest[] @relation("ReceivedRequests")
@@ -91,8 +92,21 @@ model Comment {
   text      String
   createdAt DateTime @default(now())
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post   Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  likes  CommentLike[]
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  userId    String
+  commentId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
 }
 
 model ConnectRequest {
