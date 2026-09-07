@@ -67,25 +67,27 @@ export default function SpotlightTour({
     return () => window.removeEventListener("resize", positionSpotlight);
   }, [seen, positionSpotlight]);
 
-  function dismiss() {
+  async function dismiss() {
     setDismissed(true);
-    fetch("/api/me/tour", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tour: tourName }),
-    }).catch(() => {
+    try {
+      await fetch("/api/me/tour", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tour: tourName }),
+      });
+    } catch {
       // best-effort — worst case the tour shows again next visit
-    });
+    }
   }
 
-  function skip() {
-    dismiss();
+  async function skip() {
+    await dismiss();
     if (finishHref) router.push(finishHref);
   }
 
-  function next() {
+  async function next() {
     if (index >= steps.length - 1) {
-      dismiss();
+      await dismiss();
       if (finishHref) router.push(finishHref);
     } else {
       setIndex((i) => i + 1);
